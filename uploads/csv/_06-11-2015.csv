@@ -1,0 +1,82 @@
+order_ref_id , restaurant_name, first_name, order_type, total_amount, created_time
+#FR9895987,Blue Fish Grill,NithinSkariah,Pickup,207.00,23-09-2015
+#FR941222,Red Lobster,NithinSkariah,Pickup,0.00,23-09-2015
+#FR9480668,Red Lobster,NithinSkariah,Pickup,13.60,23-09-2015
+#FR31646861,Red Lobster,AntonTestName,Pickup,16.05,23-09-2015
+#FR31845166,Red Lobster,AntonTestName,Pickup,16.95,23-09-2015
+#FR17198312,Blue Fish Grill,PraveenKumar,Pickup,10.70,23-09-2015
+#FR1788214,Blue Fish Grill,PraveenKumar,Pickup,21.40,23-09-2015
+#FR9683408,Red Lobster,NithinSkariah,Pickup,25.00,24-09-2015
+#FR31820399,Blue Fish Grill,AntonTestName,Pickup,3.00,24-09-2015
+#FR31117217,Blue Fish Grill,AntonTestName,Pickup,10.50,24-09-2015
+#FR9245559,Red Lobster,NithinSkariah,Pickup,0.00,24-09-2015
+#FR927019,Red Lobster,NithinSkariah,Pickup,0.00,24-09-2015
+#FR910876,Blue Fish Grill,NithinSkariah,Pickup,3.00,24-09-2015
+#FR958889,Blue Fish Grill,NithinSkariah,Pickup,2.50,24-09-2015
+#FR9528540,Blue Fish Grill,NithinSkariah,Pickup,3.00,24-09-2015
+#FR9872603,Blue Fish Grill,NithinSkariah,Pickup,7.50,24-09-2015
+#FR16425405,Red Lobster,ArdraMohan,Pickup,0.00,25-09-2015
+#FR19963583,Red Lobster,KiranShaji,Pickup,10.70,25-09-2015
+#FR19682341,Red Lobster,KiranShaji,Pickup,10.70,25-09-2015
+#FR24681576,Blue Fish Grill,EddieMueller,Pickup,14.00,25-09-2015
+#FR24549350,Blue Fish Grill,EddieMueller,Pickup,13.00,25-09-2015
+#FR24111586,Blue Fish Grill,EddieMueller,Pickup,9.45,25-09-2015
+#FR9196653,Blue Fish Grill,NithinSkariah,Pickup,35.00,25-09-2015
+#FR2461502,Blue Fish Grill,EddieMueller,Pickup,18.00,25-09-2015
+#FR2981268,Blue Fish Grill,JibinJoy,Pickup,3.00,30-09-2015
+#FR29868830,Blue Fish Grill,JibinJoy,Pickup,15.00,20-10-2015
+#FR29293492,Blue Fish Grill,JibinJoy,Pickup,12.00,20-10-2015
+#FR29522722,Blue Fish Grill,JibinJoy,Pickup,15.00,20-10-2015
+#FR29475183,Blue Fish Grill,JibinJoy,Pickup,15.00,20-10-2015
+#FR29876175,Blue Fish Grill,JibinJoy,Pickup,8.00,20-10-2015
+#FR29508911,Blue Fish Grill,JibinJoy,Pickup,5.00,20-10-2015
+#FR29103665,Blue Fish Grill,JibinJoy,Pickup,22.50,20-10-2015
+#FR29475025,Blue Fish Grill,JibinJoy,Pickup,4.00,20-10-2015
+#FR29910829,Blue Fish Grill,JibinJoy,Delivery,19.50,20-10-2015
+#FR26365234,Blue Fish Grill,AndrewMartin,Pickup,7.00,21-10-2015
+#FR26664295,Blue Fish Grill,AndrewMartin,Pickup,3.50,21-10-2015
+#FR26431422,Blue Fish Grill,AndrewMartin,Pickup,12.00,21-10-2015
+#FR26787791,Blue Fish Grill,AndrewMartin,Pickup,9.00,22-10-2015
+#FR26444412,Blue Fish Grill,AndrewMartin,Pickup,8.00,22-10-2015
+#FR26847879,Blue Fish Grill,AndrewMartin,Pickup,22.95,22-10-2015
+#FR26859947,Blue Fish Grill,AndrewMartin,Pickup,17.10,22-10-2015
+#FR26859947,Blue Fish Grill,AndrewMartin,Pickup,12.00,22-10-2015
+#FR26630860,Blue Fish Grill,AndrewMartin,Pickup,7.20,22-10-2015
+#FR26516214,Blue Fish Grill,AndrewMartin,Pickup,13.50,22-10-2015
+#FR26172025,Blue Fish Grill,AndrewMartin,Pickup,15.00,22-10-2015
+#FR26702626,Blue Fish Grill,AndrewMartin,Pickup,3.15,22-10-2015
+#FR2648791,Blue Fish Grill,AndrewMartin,Pickup,13.50,22-10-2015
+#FR26418741,Blue Fish Grill,AndrewMartin,Pickup,8.00,22-10-2015
+#FR2669275,Blue Fish Grill,AndrewMartin,Pickup,53.50,26-10-2015
+#FR26415977,Blue Fish Grill,AndrewMartin,Pickup,8.56,26-10-2015
+#FR26449283,Blue Fish Grill,AndrewMartin,Pickup,8.56,26-10-2015
+#FR26794094,Blue Fish Grill,AndrewMartin,Pickup,53.50,26-10-2015
+#FR2630433,Blue Fish Grill,AndrewMartin,Pickup,8.56,26-10-2015
+#FR26642767,Blue Fish Grill,AndrewMartin,Pickup,6.42,26-10-2015
+#FR26982708,Blue Fish Grill,AndrewMartin,Pickup,10.70,26-10-2015
+#FR26411371,Blue Fish Grill,AndrewMartin,Pickup,10.70,26-10-2015
+#FR26517053,Blue Fish Grill,AndrewMartin,Pickup,4.40,26-10-2015
+#FR2616529,Blue Fish Grill,AndrewMartin,Pickup,22.77,26-10-2015
+#FR26554532,Blue Fish Grill,AndrewMartin,Pickup,7.70,26-10-2015
+#FR26918932,Blue Fish Grill,AndrewMartin,Pickup,8.80,26-10-2015
+#FR2678797,Blue Fish Grill,AndrewMartin,Pickup,10.00,26-10-2015
+#FR26600010,Blue Fish Grill,AndrewMartin,Pickup,10.00,26-10-2015
+#FR26726642,Blue Fish Grill,AndrewMartin,Pickup,7.70,26-10-2015
+#FR26868403,Blue Fish Grill,AndrewMartin,Pickup,4.40,26-10-2015
+#FR26596476,Blue Fish Grill,AndrewMartin,Pickup,5.50,26-10-2015
+#FR26285591,Blue Fish Grill,AndrewMartin,Delivery,7.49,27-10-2015
+#FR26815722,Blue Fish Grill,AndrewMartin,Delivery,7.49,27-10-2015
+#FR26644883,Blue Fish Grill,AndrewMartin,Delivery,7.49,27-10-2015
+#FR2671427,Blue Fish Grill,AndrewMartin,Delivery,7.49,27-10-2015
+#FR26631314,Blue Fish Grill,AndrewMartin,Delivery,11.23,27-10-2015
+#FR26323396,Blue Fish Grill,AndrewMartin,Pickup,24.24,28-10-2015
+#FR26290055,Blue Fish Grill,AndrewMartin,Pickup,12.30,28-10-2015
+#FR26290055,Blue Fish Grill,AndrewMartin,Delivery,13.91,28-10-2015
+#FR29783774,Blue Fish Grill,JibinJoy,Pickup,10.20,04-11-2015
+#FR29324758,Blue Fish Grill,JibinJoy,Pickup,8.16,04-11-2015
+#FR2995373,Blue Fish Grill,JibinJoy,Pickup,46.72,04-11-2015
+#FR29893418,Blue Fish Grill,JibinJoy,Pickup,5.61,04-11-2015
+#FR29364916,Blue Fish Grill,JibinJoy,Pickup,8.16,04-11-2015
+#FR29515808,Blue Fish Grill,JibinJoy,Pickup,29.27,04-11-2015
+#FR29387270,Blue Fish Grill,JibinJoy,Pickup,8.16,05-11-2015
+#FR29421678,Blue Fish Grill,JibinJoy,Pickup,10.20,06-11-2015

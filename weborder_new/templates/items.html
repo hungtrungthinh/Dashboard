@@ -1,0 +1,1003 @@
+    
+<div class="col-lg-6 themebg">
+	<div class="header">
+    <div class="col-md-4 col-sm-6 col-xs-5 logo" style="padding-top: 13px;">
+    
+    <a href="javascript:" class="navlink"  ng-hide="item_id || mobilecart || check" ng-click="goToLocation()">
+    <i class="fa fa-angle-left"></i>Locations 
+    </a>
+   
+   
+    <a href="javascript:" class="navlink"  ng-show="mobilecart" ng-click="goToMenu()">
+    <i class="fa fa-angle-left"></i>Back
+    </a>
+    
+    <a href="javascript:" class="navlink"  ng-show="check" ng-click="goToMenu()">
+    <i class="fa fa-angle-left"></i>Back
+    </a>
+    
+    
+    
+    <a href="javascript:" class="navlink" ng-show="item_id" ng-click="goToMenu()">
+        <i class="fa fa-angle-left"></i>
+        <span ng-show="edititem_id">
+        	<span class="ss-icon ss-navigateleft"></span>Cancel Edit
+        </span>
+        <span ng-hide="edititem_id">
+        	<span class="ss-icon ss-navigateleft"></span>Menu
+        </span>
+    </a>
+    
+      
+    </div>
+    
+    
+    <div class="col-md-4 col-sm-1 col-xs-3">
+    <span class="ckeckoutvalue">
+    <a href="javascript:"  ng-click="showcart()">
+        <span class="heading cart-length ">
+        {{totalQty}}<i class="fa fa-shopping-cart colorred"></i>
+        </span>
+        <!--<span class="price heading cart-tag__total" ng-show="total">${{total | number:2}}</span>-->
+    </a>
+    </span>
+      &nbsp;
+      
+    </div>
+    
+    
+    <div class="col-md-4 col-sm-5 col-xs-4 text-right login colorred" style="padding-top: 13px;">
+    <span class="" ng-hide="member_id">
+    <a class="heading pull-right session-header drawer-header__action" ng-click="login()">
+    	<i class="fa fa-user"></i> Log In
+    </a>
+    </span>
+    <span class=""  ng-show="member_id">
+    	<span class="session-header__greet">Hi, {{name}}&nbsp;&nbsp;</span>
+    	<a href="javascript:" ng-click="logout()" style="font-size:17px;"> Log Out</a>
+    </span>
+    
+    
+    </div>
+    </div>
+    <!-- HEADER END-->
+    <!-- LIST START -->
+    
+    <div class="col-lg-5 col-md-5 col-sm-2 col-xs-4 col-lg-offset-10  col-md-offset-10  col-sm-offset-10   col-xs-offset-8 colorred" style="padding:12px 0px;" ng-hide="notMenu">
+    <a href="javascript:" ng-click="showAllDetails = ! showAllDetails">
+              <span  style="padding:0px 10px;" ng-show="showAllDetails"><i class="glyphicon glyphicon-resize-small"></i>Collapse All</span>
+              <span  style="padding:0px 10px;" ng-hide="showAllDetails"><i class="glyphicon glyphicon-resize-full"></i> Expand All</span>
+     </a>
+    
+    </div>
+    <div class="clearfix"></div>
+    
+  <!--    menu listing   -->
+    <div id='menulist' class="menus" ng-hide="item_id || authLogin">
+        <ul ng-repeat="category in categoryList" ng-click="showDetails = ! showDetails">   
+           <li class='has-sub'><a><span>{{category.category_name}}</span></a>
+              <ul class="menu__items">
+                 <li ng-repeat="itemslist in category.items"  ng-show="showDetails || showAllDetails" ng-click="selectItem(itemslist.item_id)">
+                 
+                 <a class="menu-item">
+                 <div class="col-xs-10 menu-itemlist">
+                 <h5>{{itemslist.item_name}}</h5>
+                 </div>
+                 <div class="col-xs-2 text-right txtprice">${{itemslist.price | number:2}}</div>
+                 <div class="clearfix"></div>
+                 </a>
+                 
+                 
+               
+                 </li>
+                 
+              </ul>
+           </li>
+        
+        </ul>
+    </div>
+    
+    
+    
+   <div id="editmenu" class="editmenu" style="overflow:auto; max-height:40%;display:none;"> 
+   <div class="menulistwrap"  ng-repeat="orderlist in orderArray">
+        <a href="javascript:">
+        <ul class="menulist">
+            <li ng-click="editItem(orderlist.item_id,$index)">
+            <div>
+            <h6>{{orderlist.quantity}}.  {{orderlist.item_name}} <span>${{orderlist.price | number:2}}</span>
+            <a class="ss-gizmo ss-delete remove" href="javascript:" ng-click="removeFromCart(orderlist.item_id,$index)">
+                <img src="images/close.png"  />
+            </a>
+            </h6>
+            <div class="wrap-pad" ng-repeat="optlist in orderlist.options">
+            	<p><b>{{optlist.optTitle}}</b></p>
+                   <ul class="menusub">
+                    <li ng-repeat="sideslist in optlist.sides">{{sideslist.sideitem}} <span>${{sideslist.sidePrice | number:2}}</span></li>
+                    
+                   </ul>
+              </div>	  
+            </div>
+            <i>Note:<span>{{orderlist.specialIns}}</span></i>
+
+            </li>
+        </ul>
+        </a>
+        
+    </div>
+    
+    <div class="">
+        <div class="col-lg-12">
+        	<span ng-if="orderType=='Delivery'">
+            DELIVERY <span class="pull-right">${{delivery_charge | number:2}}</span>
+            <hr class="totalsep">
+            </span>
+            SUB TOTAL <span class="pull-right">${{totalPrice | number:2 }}</span>
+            <hr class="totalsep">
+            TAXES <span class="pull-right">${{salesTax | number:2}}</span>
+        </div>
+        <div class="clearfix"></div>
+        <div class="alert alert--error cart__alert " ng-show="errorDelAmt">
+              <span class="message" >Minimum Delivery Amount: ${{min_delivery_amount}} Adjust quantity or add new items.</span>
+        </div>
+     	<div class="clearfix"></div>
+        
+        <div class=""  ng-class='{disabled:!orderArray.length}'>
+            <a href="javascript:" class="btncheckout"   ng-class='{disabled:!orderArray.length}' ng-hide="member_id" ng-click="checkout()">Checkout
+            <span class="pull-right">${{total | number:2 }}</span></a>
+            
+            <a href="javascript:" class="btncheckout"  ng-show="member_id"  ng-click="checkout()">Checkout
+          
+          <span class="pull-right">${{total | number:2 }}</span></a>
+        </div>
+    
+        <div class="clearfix"></div>
+        </div>
+    
+    
+    
+    
+    
+    </div>
+    
+    
+    
+    
+    
+    
+
+
+    <!-- LIST END -->
+    
+<div id="" class="ember-view  ember-view__menu-item" ng-show="item_id">
+<div class="item-details">
+  <div class="item-details-main col-lg-12"  style="padding:0px;">
+    <div class="wrap-pad">
+      <div class="heading heading--lrg" ng-model="item_name">{{itemDetail.item_name}}</div>
+      <span class="price" ng-model="price">${{price | number:2 }}</span>
+      <p class="description">{{itemDetail.item_description}}</p>
+      
+      <div class="col-lg-12" style="padding-left:0px; padding-bottom:20px;">
+      <div class="col-lg-6 col-md-6 col-sm-12"  style="padding-left:0px;">
+        <div class="heading heading--sm">Choose a Quantity</div>
+        <div class="">
+          <div class="quantity">
+            <div id="" class="ember-view">
+            <button type="button" class="btn quantity__minus" ng-click="changeQantity('minus')" ><span class="ss-icon ss-hyphen">-</span></button>
+            
+			<span class="num-quantity text--center">{{quantity}}</span>
+            
+            
+			<button type="button" class="btn quantity__plus" ng-click="changeQantity('add')" ><span class="ss-icon ss-plus">+</span></button>
+			</div>
+          </div>
+        </div>
+      </div>
+     
+      <div class="col-lg-6  col-md-6 col-sm-12"  style="padding-left:0px;" ng-show="multipleSize.length">
+        <div class="heading heading--sm">Choose a Size</div>
+        <div class="">
+            <div id="" class="ember-view">
+           	<!--<select class="form-control inputselect" style="width:100%; height:37px;" ng-change="changeSize()" ng-model="size">
+            	<option selected="selected">Select</option>
+            	<option ng-repeat="sizes in multipleSize">{{sizes.size}}</option>
+            </select> -->
+            
+			<!--<select class="form-control inputselect" style="width:100%; height:37px;" ng-init="size = multipleSize[0]" 
+                    ng-model="size"  ng-change="changeSize()" 
+                    ng-options="sizes.size for sizes in multipleSize">
+                    <option selected="selected" value="" disabled="disabled">Select</option>
+            </select>-->
+            
+            
+            <select class="form-control inputselect" style="width:100%; height:37px;" 
+                    ng-model="size"  ng-change="changeSize()" 
+                    ng-options="sizes as sizes.size for sizes in selecteSize track by sizes.size">
+                    <option selected="selected" value="" disabled="disabled">Select</option>
+            </select>
+
+			</div>
+        </div>
+      </div>
+     <div class="clearfix"></div> 
+      </div>
+      
+      
+    </div>
+  </div>
+  
+    <div class="item-options">
+    	<div class="wrap-pad">
+       
+         <div class="ember-view ember-view__mod-group is-invalid" ng-repeat="optid in itemDetail.option_id" id="{{$index}}" >
+            <header class="heading--sm">{{itemDetail.option_name[optid]}}
+            <span class="mod-qty" ng-show="itemDetail.multiple_limit[optid]">({{itemDetail.multiple_limit[optid]}})</span>
+            
+            <span class="is-invalid required" ng-show="itemDetail.is_mandatory[optid]=='Y'">Required</span>
+        </header>
+        <ul class="item-options-list">
+            <li ng-repeat="sideid in itemDetail.side_id[optid]" >
+              <a href="javascript:">
+                
+                <input id="{{sideid}}" type="checkbox" value="{{itemDetail.side_item[optid][sideid]}}" ng-model="arrayTest[sideid][0].selected"  ng-click="toggleSelection(sideid,itemDetail.item_id,optid,itemDetail.multiple_limit[optid],itemDetail.is_mandatory[optid])"  ng-disabled="checked" />
+                
+                
+                <!--<input id="{{sideid}}" type="checkbox" value="{{itemDetail.side_item[optid][sideid]}}" ng-model="arrayTest[sideid][0].selected"  ng-checked="newSidesArray[Sideindex].indexOf(sideid) > -1" ng-click="toggleSelection(sideid,itemDetail.item_id,optid,itemDetail.multiple_limit[optid])"  ng-disabled="checked" />-->
+              
+                
+                <span class=" mod-label">
+                  {{itemDetail.side_item[optid][sideid]}}
+                </span>
+                <span class="price" ng-show="itemDetail.side_price[optid][sideid]">
+                  ${{itemDetail.side_price[optid][sideid] | number:2 }}
+                </span>
+                <span class="price" ng-hide="itemDetail.side_price[optid][sideid]">
+                  &ndash;
+                </span>
+              </a>
+            </li>
+          </ul>
+          
+          
+    		</div>
+   		</div>
+    </div>
+  
+
+    <div class="item-instructions">
+      <div class="wrap-pad">
+        <span class="heading heading--sm"><span class="ss-icon ss-compose"></span> Special Notes</span>
+        <div class="form-group">
+          <div class="col col--12">
+            <input type="text" id="" ng-model="specialIns" class="ember-view ember-text-field form-control" maxlength="80" placeholder="">
+            <div id="" class="ember-view alert alert--error is-hidden">false
+</div>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+
+<div id="" class="ember-view item__anchor" style="position: fixed; bottom: 0px; z-index: 5; display: block;">  
+  <button type="button" class="btn btn-success btn-sml btn-block item__add-to-cart" ng-hide="edititem_id" ng-click="addToOrder(item_id)">Add to Order</button>
+  
+  <button type="button" class="btn btn-success btn-sml item__add-to-cart btn-block" ng-show="edititem_id" ng-click="addToOrder(item_id,Sideindex)">Save &amp; Continue</button>
+  
+</div>
+
+</div> 
+    
+<!--<div class="col-md-12" ng-show="item_id">
+<div class="col-md-12">
+  	<h1 ng-model="item_name">{{itemDetail.item_name}}<span ng-model="price">${{price | number:2 }}</span></h1>
+    <p>{{itemDetail.item_description}}</p>
+    
+    
+      <div class="col-md-6 col-sm-6 col-xs-12"  style="padding-left:0px;">
+        <h3>Choose a Quantity</h3>
+        <div class="col col--6">
+        
+        
+          <div class="quantity" style="width:120px;">
+            <div id="" class="ember-view">
+            <button type="button" class="btn quantity__minus"  style="width:40px;" ng-click="changeQantity('minus')" ><span class="ss-icon ss-hyphen">-</span></button>
+            
+			<span class="num-quantity text--center"  style="width:40px; float:right; margin-right:40px;">{{quantity}}</span>
+            
+            
+			<button type="button" class="btn quantity__plus"  style="width:40px; float:right;" ng-click="changeQantity('add')" ><span class="ss-icon ss-plus">+</span></button>
+			</div>
+          </div>
+          
+          
+        </div>
+      </div>
+      
+      <div class="col-md-6 col-sm-6 col-xs-12"  style="padding-left:0px;" ng-show="multipleSize.length">
+        <h3>Choose a Size</h3>
+        <div class="col col--12 col-sm-6 col-md-6">
+            <div id="" class="ember-view">
+           	<select style="width:100%; height:37px;" ng-change="changeSize()" ng-model="size">
+            	<option ng-repeat="sizes in multipleSize">{{sizes.size}}</option>
+            </select> 
+			</div>
+        </div>
+      </div>
+    
+          
+    
+    
+    
+    
+    
+    
+    
+    <div class="clearfix"></div>
+    <hr>
+    
+    
+    <div class="col-md-12" ng-repeat="optid in itemDetail.option_id" id="{{$index}}" >
+    <h4>{{itemDetail.option_name[optid]}}
+    <span class="mod-qty" ng-show="itemDetail.multiple_limit[optid]">({{itemDetail.multiple_limit[optid]}})</span>
+    <span class="is-invalid required" ng-show="itemDetail.is_mandatory[optid]=='Y'">Required</span>
+    </h4>
+    
+    <div class="col-md-12">
+    <ul class="addons">
+   	 <li style="" ng-repeat="sideid in itemDetail.side_id[optid]" class="col-md-6 colorblack">
+     <a href="javascript:">
+         <div class="checkbox"> <label>
+
+         
+         <input id="{{sideid}}" type="checkbox" value="{{itemDetail.side_item[optid][sideid]}}" ng-model="arrayTest[sideid][0].selected"  ng-click="toggleSelection(sideid,itemDetail.item_id,optid,itemDetail.multiple_limit[optid],itemDetail.is_mandatory[optid])"  ng-disabled="checked" />
+         
+         {{itemDetail.side_item[optid][sideid]}} </label>
+         <span class="pull-right" ng-show="itemDetail.side_price[optid][sideid]">${{itemDetail.side_price[optid][sideid] | number:2 }}</span>
+         <span class="pull-right" ng-hide="itemDetail.side_price[optid][sideid]">&ndash;</span>
+         
+         </div>
+      </a>
+     </li>
+    </ul>
+    
+    </div>
+    
+    </div>
+    
+  
+    
+    
+    <div class="col-md-12" style="margin-top:30px; margin-bottom:40px;">
+    <h4></h4>
+    <div class="form-group"> 
+    <label for="exampleInputEmail1"><i class="fa fa-edit"></i> Special Notes</label> 
+    <input type="text" id="" ng-model="specialIns" class="form-control" maxlength="80" placeholder="">
+
+
+
+    
+    
+
+      
+    
+
+    </div>
+    </div>
+    
+
+</div>
+<div class="clearfix"></div>
+<div class="col-lg-12">
+    <button type="button" class="btn btn-block btn-success btngreen col-sm-6  " ng-hide="edititem_id" ng-click="addToOrder(item_id)">Add to Order</button>
+      <button type="button" class="btn btn-block btn-success btngreen" ng-show="edititem_id" ng-click="addToOrder(item_id,Sideindex)">Save &amp; Continue</button>
+</div>
+
+</div>-->
+    
+    
+	<!--  RIGHT SIDE -->
+    <div class="right-layout">
+    <div id="map"></div>
+    <ul class="listrow">
+    <li>{{restaurantname}}</li>
+    <li>{{orderType}} - {{fullDay}} {{orderTimeTitle}}</li>
+    </ul>
+    
+    <div class="pane-stack__pane pane-stack__pane-scroller-wrap cart tet" style="max-height:40%; overflow-y:auto; overflow-x:hidden;" >
+   
+    <ul class="pane-stack__pane-scroller cart-list "  ng-repeat="orderlist in orderArray">
+    
+    <div id="ember4414" class="ember-view"> 
+    
+    <li  class="cart-list-item " ng-click="editItem(orderlist.item_id,$index)">
+    <div class="wrap-pad">
+      <div class="item">
+        <span class="cart-item__quantity text--center ">{{orderlist.quantity}}</span>
+        <span class="cart-item-name" title="Create Your Own">{{orderlist.item_name}}</span>
+        <div class="price">${{orderlist.price | number:2}}</div>
+        <a class="ss-gizmo ss-delete remove" href="javascript:" ng-click="removeFromCart(orderlist.item_id,$index)">
+        	<img src="images/close.png"  />
+        </a>
+       
+      </div>
+    </div>
+    
+    
+    <div class="cart-item__quantity-counter ">
+      <div class="wrap-pad">
+        <div id="ember4420" class="ember-view"><button class="btn quantity__minus" ><span class="ss-icon ss-hyphen"></span></button>
+            <span class="num-quantity text--center">
+                1
+            </span>
+            <button class="btn quantity__plus" ><span class="ss-icon ss-plus"></span></button>
+        </div>
+        <button class="btn close" >Close</button>
+      </div>
+     </div>
+        
+        
+        <div class="wrap-pad" ng-repeat="optlist in orderlist.options">
+          <div class="mods">
+            <strong>{{optlist.optTitle}}</strong>
+            <ul>
+                <li ng-repeat="sideslist in optlist.sides">
+                <div class="col-md-9" style="padding-left:0px;">
+               		{{sideslist.sideitem}}<!---->
+                </div>
+                <div class="col-lg-3">
+                	<span class="mod-price">${{sideslist.sidePrice | number:2}}</span>
+                </div>
+                <div class="clearfix"></div>
+                
+               
+                </li>
+                
+            </ul>
+          </div>
+          
+        </div>
+        
+        <div class="wrap-pad mods item-note">
+          	<i><strong>Note:</strong>{{orderlist.specialIns}}</i>
+       	</div>
+        
+	  </li>
+ 		
+
+		</div>
+      <div class="discount-item">
+      </div>
+    </ul>
+  </div>
+  
+  
+   <!--<div class="tet" style=" overflow-x: hidden;    overflow-y: auto; max-height:40%;"> 
+   <div class="menulistwrap"  ng-repeat="orderlist in orderArray">
+        <a href="javascript:">
+        <ul class="menulist">
+            <li ng-click="editItem(orderlist.item_id,$index)" class="cart-list-item ">
+            <div class="item">
+           {{orderlist.quantity}}.  {{orderlist.item_name}}
+           
+           <span style="float:right;">${{orderlist.price | number:2}}
+           <a class="ss-gizmo ss-delete remove" href="javascript:" ng-click="removeFromCart(orderlist.item_id,$index)">
+                <img src="images/close.png"  />
+           </a>
+           
+           </span>
+            
+             
+            
+            <div class="wrap-pad" ng-repeat="optlist in orderlist.options">
+            	<p><b>{{optlist.optTitle}}</b></p>
+                   <ul class="menusub">
+                    <li ng-repeat="sideslist in optlist.sides">{{sideslist.sideitem}} <span>${{sideslist.sidePrice | number:2}}</span></li>
+                    
+                   </ul>
+              </div>	  
+            </div>
+            <i>Note:<span>{{orderlist.specialIns}}</span></i>
+
+            </li>
+        </ul>
+        </a>
+        
+    </div>
+    </div>-->    
+        
+
+    
+    <div class="pricevalue">
+        <div class="col-lg-12">
+        	<span ng-if="orderType=='Delivery'">
+            DELIVERY <span class="pull-right">${{delivery_charge | number:2}}</span>
+            <hr class="totalsep">
+            </span>
+            SUB TOTAL <span class="pull-right">${{totalPrice | number:2 }}</span>
+            <hr class="totalsep">
+            TAXES <span class="pull-right">${{salesTax | number:2}}</span>
+        </div>
+        <div class="clearfix"></div>
+        <div class="alert alert--error cart__alert " ng-show="errorDelAmt">
+              <span class="message" >Minimum Delivery Amount: ${{min_delivery_amount}} Adjust quantity or add new items.</span>
+        </div>
+     	<div class="clearfix"></div>
+        
+        <div class=""  ng-class='{disabled:!orderArray.length}'>
+            <a href="javascript:" class="btncheckout"   ng-class='{disabled:!orderArray.length}' ng-hide="member_id" ng-click="checkout()">Checkout
+            <span class="pull-right">${{total | number:2 }}</span></a>
+            
+            <a href="javascript:" class="btncheckout"  ng-show="member_id"  ng-click="checkout()">Checkout
+          
+          <span class="pull-right">${{total | number:2 }}</span></a>
+        </div>
+    
+        <div class="clearfix"></div>
+        </div>
+    </div>
+    <!-- END RIGHT SIDE -->
+    
+    
+<div class="checkout" ng-show="authLogin && item_id=='' ">
+<div id="spinnerr" class="ember-view spinner-overlay is-hidden"><div class="spinner spinner spinner--absolute"></div>
+</div>
+
+  <form ng-submit="payment()" name="form" >
+    <div class="wrap-pad">
+      <div class="block block-contact block--first">
+        <div class=" block__header">
+          <h5>Contact</h5>
+        </div>
+        <div class="block__content ">
+        
+        
+              <div class="col-lg-4 col-md-4 ">
+                <h4>Name</h4>
+              </div>
+              <div class="col-lg-8 col-md-8">
+                    {{profile_details.first_name}} {{profile_details.last_name}}
+                    <a class="block__action" ><span class="ss-icon ss-write"></span></a>
+              </div>
+           	  <div class="clearfix"></div>
+              <div class="col-lg-4 col-md-4">
+                <h4>Email</h4>
+              </div>
+              <div class="col-lg-8 col-md-8">
+                {{profile_details.email}}
+              </div>
+              <div class="clearfix"></div>
+              <div class="col-lg-4 col-md-4">
+                <h4>Phone</h4>
+              </div>
+              <div class="col-lg-8 col-md-8">
+              	{{phoneNo}}
+                <input type="tel" id="phoneNo"  autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" class="reqText ember-view ember-text-field form-control" placeholder="Phone" ng-hide="phoneNo" ng-model="pay_phone" ng-blur="validatePhone()" name="phone number">
+                
+                <div id="ember798" class="ember-view alert alert--error" ng-show="errorphone">{{errorphone}}</div>
+                
+              </div>
+              <div class="clearfix"></div>
+        </div>
+        <div class="clearfix"></div>
+      </div>
+
+      <div class="block">
+        <div class="block__header" >
+          <h5>Order Details</h5>
+        </div>
+        <div class="block__content"  ng-show="details.orderType=='Pickup'">
+            <div class="">
+                <button id="ember835" class="ember-view btn btn-option btn-block active" style=" cursor:default;"  type="button">Pickup</button>
+            </div>
+            <hr>
+            <h4>Pickup Location</h4>
+            <span>{{restaurantname}}</span>
+            <div id="ember849" class="ember-view">
+            <address>
+                <span class="address__street-address">{{details.resDetails.address}}</span><br>
+                <span class="address__city">{{details.resDetails.city}}, </span>
+                <span class="address__state">{{details.resDetails.state}} </span> 
+                <span class="address__zip">{{details.resDetails.zip_code}}</span>
+             </address>
+            </div>
+        </div>
+        
+        <div class="block__content"  ng-show="details.orderType=='Delivery'">
+            <div class="">
+               <button id="ember837" class="ember-view btn btn-option btn-block active" style=" cursor:default;" type="button">Delivery</button>
+			</div>
+            <br>
+            <div class="" ng-show="details.deliveryAddress.instruction">
+            <h4>Delivery Instruction</h4>
+            {{details.deliveryAddress.instruction}}
+            </div>
+            <hr>
+
+            <h4>Delivery Address</h4>
+            <div id="ember849" class="ember-view">
+            	<address>
+                <span class="address__street-address">{{details.deliveryAddress.address}}</span><br>
+                <span class="address__city" ng-show="details.deliveryAddress.appartment">{{details.deliveryAddress.appartment}}<br></span>
+                <span class="address__city">{{details.deliveryAddress.city}}, </span>
+                <span class="address__state">{{details.deliveryAddress.state}} </span>
+                <span class="address__zip">{{details.deliveryAddress.zip}}</span>
+                </address>
+            </div>
+        </div>
+        
+        
+      </div>
+
+      <div class="block block-payment">
+        <div class="block__header">
+          <h5>Payment</h5>
+        </div>
+        <div class="block__content">
+            <div id="ember865" class="ember-view"><div class="row is-hidden">
+  <div class="col col--12">
+    <ul class="card-options-list">
+        <li >
+          <div class="is-checked cc-wrapper">
+            <span class="ss-icon ss-record ss-check"></span>
+            <div class="cc--details">
+                <span>Add New Card</span>
+            </div>
+        </div>
+        </li>
+    </ul>
+
+  </div>
+</div>
+
+  <div class="billing-form ">
+
+    <div class="form-group ">
+
+      <input type="text" id=""  autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" class="reqText ember-view ember-text-field  form-control" placeholder="Cardholder Name" ng-model="holdername" name="cardholder name" >
+      <div id="" class="ember-view alert alert--error is-hidden">false
+</div>
+    </div>
+    <div class="form-group ">
+      <div class="col col--12">
+        <div class="input-wrapper input-wrapper--icon">
+          <input type="tel"  id="cardNo"  autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" class="reqText ember-view ember-text-field form-control form-control--credit-card cc-num" placeholder="Card Number" name="card number" ng-model="cardno" autocomplete="cc-number" data-ng-change="formatDetails()">
+         
+        </div>
+      </div>
+      
+      <div class="clearfix"></div><br />
+      <div class="col col--4 col--4--sm">
+        <div class="">
+          <select id="" class="ember-view ember-select form-control reqText" name="month expire" ng-model="card_month">  
+          <option value="">Month</option>
+          <option id="" class="ember-view" value="1">1</option>
+          <option id="" class="ember-view" value="2">2</option>
+          <option id="" class="ember-view" value="3">3</option>
+          <option id="" class="ember-view" value="4">4</option>
+          <option id="" class="ember-view" value="5">5</option>
+          <option id="" class="ember-view" value="6">6</option>
+          <option id="" class="ember-view" value="7">7</option>
+          <option id="" class="ember-view" value="8">8</option>
+          <option id="" class="ember-view" value="9">9</option>
+          <option id="" class="ember-view" value="10">10</option>
+          <option id="" class="ember-view" value="11">11</option>
+          <option id="" class="ember-view" value="12">12</option>
+</select>
+        </div>
+      </div>
+      <div class="col col--4 col--4--sm">
+        <div class="">
+          <select id="" class="ember-view ember-select form-control reqText" name="year expire" ng-model="card_year">
+          <option value="">Year</option>
+          <option id="" class="ember-view" value="2016">2016</option>
+          <option id="" class="ember-view" value="2017">2017</option>
+          <option id="" class="ember-view" value="2018">2018</option>
+          <option id="" class="ember-view" value="2019">2019</option>
+          <option id="" class="ember-view" value="2020">2020</option>
+          <option id="" class="ember-view" value="2021">2021</option>
+          <option id="" class="ember-view" value="2022">2022</option>
+          <option id="" class="ember-view" value="2023">2023</option>
+          <option id="" class="ember-view" value="2024">2024</option>
+          <option id="" class="ember-view" value="2025">2025</option>
+          <option id="" class="ember-view" value="2026">2026</option>
+          <option id="" class="ember-view" value="2027">2027</option>
+          <option id="" class="ember-view" value="2028">2028</option>
+          <option id="" class="ember-view" value="2029">2029</option>
+          <option id="" class="ember-view" value="2030">2030</option>
+          <option id="" class="ember-view" value="2031">2031</option>
+          <option id="" class="ember-view" value="2032">2032</option>
+          <option id="" class="ember-view" value="2033">2033</option>
+          <option id="" class="ember-view" value="2034">2034</option>
+          <option id="" class="ember-view" value="2035">2035</option>
+          <option id="" class="ember-view" value="2035">2036</option>
+          <option id="" class="ember-view" value="2035">2037</option>
+          <option id="" class="ember-view" value="2035">2038</option>
+          <option id="" class="ember-view" value="2035">2039</option>
+          <option id="" class="ember-view" value="2035">2040</option>
+</select>
+        </div>
+      </div>
+      <div class="col col--4 col--4--sm">
+        <input type="tel" id="ember1194"  autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" class="reqText ember-view ember-text-field form-control form-control--cvv cc-cvv"  data-ng-change="formatDetails()" ng-model="card_cvv" placeholder="CVV" autocomplete="off" name="cvv" >
+      </div>
+    </div>
+	<div id="ember798" class="ember-view alert alert--error" ng-show="errorPaymentInfo">{{errorPaymentInfo}}</div>
+    
+  </div>
+</div>
+
+        </div>
+      </div>
+
+      <div class=" promo-code">
+        <div class="block">
+          <div class="block__header ">
+            <h5>Promo Code</h5>
+          </div>
+          <div class="block__content ">
+            <div class="input-wrapper input-wrapper--icon" ng-hide="promoDiscout">
+              <input type="text" id=""  autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" class="ember-view ember-text-field form-control promo" ng-model="promocode" placeholder="">
+              <a href="javascript:" class="heading btn-apply" ng-click="promocodeApply()">Apply</a>
+            </div>
+            
+            <div class="input-wrapper input-wrapper--icon" ng-show="promoDiscout">
+              <input type="text" id=""  autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" class="ember-view ember-text-field form-control promo" ng-model="promocode" placeholder="">
+              <a href="javascript:" class="heading btn-apply" style="cursor:default">Applied</a>
+            </div>
+            
+            
+            <div class="alert alert--error " ng-show="promoError">{{promoError}}</div>
+            
+              
+          </div>
+        </div>
+      </div>
+
+      <div class="block block-payment">
+        <div class="block__header ">
+          <h5>Tip</h5>
+        </div>
+        <div class="block__content row">
+          <div id="" class="ember-view"><div class="row">
+  <div class="col-lg-12">
+    <ul>
+      <li class="col-lg-2" style="padding:3px;">
+        <button type="button" class="btn btn-option " ng-click="findTip(10)">10<span class="percent">%</span></button>
+      </li>
+      <li class="col-lg-2" style="padding:3px;">
+        <button type="button" class="btn btn-option " ng-click="findTip(15)">15<span class="percent">%</span></button>
+      </li>
+      <li class="col-lg-2" style="padding:3px;">
+        <button type="button" class="btn btn-option " ng-click="findTip(18)">18<span class="percent">%</span></button>
+      </li>
+      <li class="col-lg-2" style="padding:3px;">
+        <button type="button" class="btn btn-option " ng-click="findTip(20)">20<span class="percent">%</span></button>
+      </li>
+      <li class="col-lg-4" style="padding:3px;">
+   		<input type="text"  autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" id="ember881" class="ember-view ember-text-field form-control tip-input" ng-model="tip " ng-blur="findTipText()" placeholder="0.00" name="tip">
+      </li>
+      
+    </ul>
+   
+  </div>
+  
+</div>
+</div>
+          
+          <div id="" class="ember-view alert alert--error is-hidden">false</div>
+        </div>
+      </div>
+
+      <div class="block">
+        <div class="block__header">
+          <div class="col col--6">
+            <h5>Order Summary</h5>
+          </div>
+          <div class="clearfix"></div>
+        </div>
+        
+        <div class="block__content" style="padding:13px">
+            <div class="col">
+
+              <div id="" class="ember-view">  
+              <ul class="cart-checkout__list">
+              	
+                <li ng-if="orderType=='Delivery'">
+                  <span >Delivery</span>
+                  <span class="text--bold price ">${{delivery_charge | number:2}}</span>
+                </li>
+    
+                <li>
+                  <span>Subtotal</span>
+                  <span class="text--bold price">${{totalPrice | number:2 }}</span>
+                </li>
+                <li ng-show="promoDiscout">
+                  <span>Discount</span>
+                  <span class="text--bold price">${{promoDiscout | number:2 }}</span>
+                </li>
+                
+                <li class="cart-taxes">
+                  <span>Taxes</span>
+                  <span class="text--bold price">${{salesTax | number:2 }}</span>
+                </li>
+                <li class="cart-tip" ng-show="tip">
+                    <span>Tip</span>
+                    <span class="text--bold price">${{tip | number:2 }}</span>
+                </li>
+      
+      
+	  			</ul>
+</div>
+
+              <ul class="cart-checkout__list checkout-total">
+                <li>
+                  <span>Total</span>
+                  <span class="price">${{total | number:2}}</span>
+                </li>
+              </ul>
+            </div>
+          
+          
+          
+        </div>
+      </div>
+
+      <div id="" class="ember-view is-hidden"></div>
+
+      <div class="btn-wrap">
+        <div id="" class="ember-view spinner-overlay is-hidden"><div class="spinner spinner spinner--absolute"></div>
+</div>
+        <div id="" class="ember-view"><div class="alert alert--error cart__alert is-hidden">
+  <span class="message"></span>
+</div>
+</div>
+
+        <button class="btn btn-primary btn-block" >
+          Complete Order
+        </button>
+      </div>
+    </div>
+  </form>
+</div> 
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</div>
+
+
+
+
+
+
+
+<div id="spinner" class="ember-view spinner-overlay is-transparent is-hidden">
+<div class="spinner spinner spinner--absolute"></div>
+</div>
+
+
+<!--<div class="modal-dialog" modal="showModal" ng-show="showModal" close="cancel()" style=" top:50%;z-index:2000000;">
+  <div class="modal-content" >
+    <div class="modal-header" style="height:58px;">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true"  ng-click="notCancelOrder()" >&times;</button>
+      <h4 class="modal-title">Cancel Order</h4>
+    </div>
+    <div class="modal-body">
+      Are you sure you want to cancel this order?
+    </div>
+    <div class="modal-footer" style="height:64px;">
+      <button type="button" class="btn btn-default" data-dismiss="modal"  ng-click="cancelOrder()" > Yes</button>
+      <button type="button" class="btn btn-primary" ng-click="notCancelOrder()">No, don't cancel.</button>
+    </div>
+  </div>
+  </div>-->
+
+
+
+
+
+ <div class="modal" id="getshowModal" data-backdrop="static" data-keyboard="false" style="z-index:111111; overflow-y:hidden;" aria-labelledby="myModalLabel" aria-hidden="true">
+   <div class="">
+      <div class="modal-content">
+       <div class="modal-header">
+         <button type="button" class="close" data-dismiss="modal" aria-label="Close" ng-click="completeOrder()"><span aria-hidden="true">&times;</span></button>
+         <h4 class="modal-title" id="myModalLabel">Cancel Order</h4>
+       </div>
+       <div class="modal-body" id="getCode">
+          Are you sure you want to cancel this order?
+       </div>
+      <button style="margin-left:10px; margin-bottom:10px;" type="button" class="btn btn-default" data-dismiss="modal"  ng-click="cancelOrder()" > Yes</button>
+      <button style="margin-left:10px; margin-bottom:10px;" type="button" class="btn btn-primary" data-dismiss="modal"  ng-click="notCancelOrder()">No, don't cancel.</button>
+       
+    </div>
+   </div>
+ </div>
+ 
+
+ <div class="modal" id="getCodeModal" data-backdrop="static" data-keyboard="false" style="z-index:111111; overflow-y:hidden;" aria-labelledby="myModalLabel" aria-hidden="true">
+   <div class="">
+      <div class="modal-content">
+       <div class="modal-header">
+         <button type="button" class="close" data-dismiss="modal" aria-label="Close" ng-click="completeOrder()"><span aria-hidden="true">&times;</span></button>
+         <h4 class="modal-title" id="myModalLabel">MESSAGE</h4>
+       </div>
+       <div class="modal-body" id="getCode">
+          Order Placed Successfully
+       </div>
+       <button type="button" class="btn btn-primary" style="width:20%; padding: 12px; margin-left:15px; margin-bottom:10px;" data-dismiss="modal" ng-click="completeOrder()"> OK</button>
+       
+    </div>
+   </div>
+ </div>
+ 
+ 
+ <div class="modal" id="errormodal" data-backdrop="static" data-keyboard="false" style="z-index:111111; overflow-y:hidden;" aria-labelledby="myModalLabel" aria-hidden="true">
+   <div class="">
+      <div class="modal-content">
+       <div class="modal-header">
+         
+         <h4 class="modal-title" id="myModalLabel">Oops!</h4>
+       </div>
+       <div class="modal-body" id="getCode">
+          You've reached the max amount of options allowed. Deselect an item to choose another option.<br /><br />
+          <button type="button" class="btn btn-primary" style="width:20%; padding: 12px; margin-left:0px;" data-dismiss="modal"> OK</button>
+       </div>
+    
+    </div>
+   </div>
+ </div>
+<div id="spinn" class="ember-view spinner-overlay is-hidden" style="position: fixed;'">
+<div class="spinner spinner spinner--absolute"></div>
+</div>
+
+ <div class="modal" id="errorRequired" data-backdrop="static" data-keyboard="false" style="z-index:111111; overflow-y:hidden;" aria-labelledby="myModalLabel" aria-hidden="true">
+   <div class="">
+      <div class="modal-content">
+       <div class="modal-header">
+         
+         <h4 class="modal-title" id="myModalLabel">Forgot Something?</h4>
+       </div>
+       <div class="modal__body" style="margin-left:13px;">
+          <p>The following items are required: 
+            <ul class="modal__list">
+            <li ng-repeat="notOpt in notSelectOptID">{{notOpt.opname}}</li>
+            </ul> 
+          </p>
+          <p align="right" style="margin-right:13px;">
+          <button type="button" class="btn btn-primary" style="width:20%; padding: 12px; margin-left:0px;" data-dismiss="modal"> OK</button>
+          </p>
+       </div>
+       
+    
+    </div>
+   </div>
+ </div>
+<div id="spinn" class="ember-view spinner-overlay is-hidden" style="position: fixed;'">
+<div class="spinner spinner spinner--absolute"></div>
+</div>
+  
+  
+<div class="modal" id="errorSelect" data-backdrop="static" data-keyboard="false" style="z-index:111111; overflow-y:hidden;" aria-labelledby="myModalLabel" aria-hidden="true">
+   <div class="">
+      <div class="modal-content" style="max-width:500px;">
+       <div class="modal-header">
+         
+         <h4 class="modal-title" id="myModalLabel">Oops!</h4>
+       </div>
+       <div class="modal-body" id="getCode" style="font-size:21px;">
+          Please select a size<br /><br />
+          <button type="button" class="btn btn-primary" style="width:20%; padding: 12px; margin-left:0px;" data-dismiss="modal"> OK</button>
+       </div>
+    
+    </div>
+   </div>
+ </div>
+  

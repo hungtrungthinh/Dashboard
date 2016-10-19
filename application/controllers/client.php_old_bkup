@@ -1,0 +1,514 @@
+<?php 
+class Client extends MY_Controller {
+
+	public function __construct()
+	{
+		
+		parent::__construct();
+		$this->load->model('client_model');
+	}
+
+	public function index()
+	{
+		  if (isset($HTTP_RAW_POST_DATA))  
+		 {
+		  	$json = $HTTP_RAW_POST_DATA;
+		 }
+		 else 
+		 {
+		 	$json = implode("\r\n", file('php://input'));
+		 } 
+ 		//$json='{"function":"explore","parameters": {"categary_id": "574","lat": "11.874477","lon": "75.370369"},"token":""}';
+	 	// $json='sss';		 
+	 // $json='{"function":"get_categary_list","parameters": {"categary_id":"16"},"token":""}';
+		//$json='{"function":"get_sub_categories", "parameters": {"game_id":"2","page":"0"},"token":""}';
+	//$json='{"function":"login","parameters": {"username": "clarapeter92@yahoo.in","password": "newagesmb","lat": "10.008658","long": "76.318794"},"token":""}';
+		$array  = json_decode($json,TRUE);
+		//echo '<pre>';print_r($array);exit;
+		$token 			= $array['token'];
+		$function_name 	= $array['function'];	
+		$this->$function_name($array['parameters']);
+	}
+		
+		public function insertUser(){
+				
+				$this->load->model('user_model');
+				$data 	= 	 file_get_contents("php://input");
+				$data 	=	 json_decode($data, true);
+				$data['created_date'] = date('Y-m-d H:i:s');
+				//print_r($data);exit;
+				if(count($this->user_model->get_by(array('email' => $data['email'])))){
+					$rs['error'] = "Email id already exist";
+				}else{		
+					$rs['insert_id'] = $this->user_model->insert($data);
+				}
+				
+				echo json_encode($rs);
+				
+		}
+		public function getUser(){
+				
+				$this->load->model('user_model');
+				 $this->user_model->setTable('fk_member_master');
+				$data 	= 	 file_get_contents("php://input");
+				$data 	=	 json_decode($data, true);
+				
+				$result = $this->user_model->get_by(array('member_id' => $data['id']));
+				$rs['name'] = $result->first_name.' '.$result->last_name;
+				$rs['profile_image'] = $result->profile_image;
+				echo json_encode($rs);
+				
+		}
+		public function saveUserFb(){
+			
+			
+			
+			$data 	= 	 file_get_contents("php://input");
+			$data 	=	 json_decode($data, true);
+			
+			$data['created_date'] = date('Y-m-d H:i:s');
+			$rs['result'] = $this->client_model->insert('fk_member_master', $data);
+			
+			echo json_encode($rs);
+		}
+		
+		function updateUser(){
+			
+			$data 	= 	 file_get_contents("php://input");
+			$data 	=	 json_decode($data, true);
+			
+			$rs['result'] = $this->client_model->update('fk_member_master', $data['user_data'],array('member_id'=> $data['id']));
+			
+			echo json_encode($rs);
+		}
+		
+		function checkFbLogin(){
+		
+			
+			
+			$data 	= 	 file_get_contents("php://input");
+			
+			$data 	=	 json_decode($data, true);
+			
+			$data["auth_id !="] = '';
+			
+			$response = $this->client_model->get_where('fk_member_master', $data, 'member_id ASC');
+			
+			echo json_encode($response);
+		
+		}
+		function checkFbUser(){
+		
+			
+			
+			$data 	= 	 file_get_contents("php://input");
+			
+			$data 	=	 json_decode($data, true);
+			
+			$response = $this->client_model->get_where('fk_member_master', $data, 'member_id ASC');
+			
+			if(empty($response))
+			{
+				$result['type'] = 3;
+			}
+			else if($response['auth_type']=='general')
+			{
+				$result['type'] = 2;
+				$result['result'] = $response['member_id'];
+			}
+			else
+			{
+				$result['type'] = 1;
+				$result['result'] = $response['member_id'];
+			}
+			
+			echo json_encode($result);
+		
+		}
+		
+		public function authenticate(){
+		
+			$this->load->model('user_model');
+		
+			$data 	= 	 file_get_contents("php://input");
+			$data 	=	 json_decode($data, true);
+			
+			$userDetails = $this->user_model->get_by(array('email' => $data['email'],'restaurant_id'=>$data['restaurant_id']));
+			
+			if(empty($userDetails)){
+				$rs['error'] = "Incorrect Email";
+			}else if($userDetails->auth_type!='facebook'){
+				if($userDetails->password != $data['password']){
+					$rs['error'] = "Incorrect Password";
+				}
+				elseif($userDetails->is_block == 'Y'){
+					$rs['error'] = "This account has been blocked. Please contact administrator";
+				}
+				else{
+					$rs['success'] = $userDetails->member_id;
+				}
+			}
+			else
+			{
+				$rs['error'] = "Incorrect User";
+			}
+			
+			echo json_encode($rs);
+	
+		}
+		function forgotPassword(){
+		
+			$this->load->model('user_model');
+		
+			$data 	= 	 file_get_contents("php://input");
+			$data 	=	 json_decode($data, true);
+			
+			$userDetails = $this->user_model->get_by(array('email' => $data['email']));
+			
+			if(empty($userDetails)){
+				$rs['error'] = "Incorrect Email";
+			}else if($userDetails->auth_type!='facebook'){
+		
+				$this->load->model('email_model');
+				
+				$new_password 	= 	$this->user_model->randomPassword(); # generate random password
+				$update_array['password'] = $new_password;
+				$update_array['member_id'] = $userDetails->member_id;
+				$userDetails = $this->user_model->updateUser($update_array);
+				
+				$email = $this->email_model->get_email_template('forgot_password');
+				
+					
+                $this->load->library('encrypt');
+                $useremail 	 = $userDetails->email;
+                $fstname = $userDetails->first_name;
+                $lstname = $userDetails->last_name;
+				$passwd = $userDetails->password;
+                $target_name = $this->config->item('site_name');
+               
+                 
+                $subject = $email['email_subject'];
+               	$message  = $email['email_template'];        
+                $headers  = "MIME-Version: 1.0" . "\r\n";
+				$headers .= "Content-type:text/html; charset=utf-8" . "\r\n";			
+				$headers .= 'From: '.$this->config->item('email_from'). "\r\n";
+						
+				$message  = $email['email_template'];                          
+				$message  = str_replace('%FULL_NAME%',$fstname.' '.$lstname,$message);	
+				$message  = str_replace('%PASSWORD%',$passwd,$message);
+				$message  = str_replace('%SITE_NAME%',$target_name,$message);
+						
+				@mail($useremail, $subject, $message, $headers);
+							
+				$rs['success'] = 'Check your registered email';
+				
+			}
+			else
+			{
+				$rs['error'] = "Incorrect User";
+			}
+			
+			echo json_encode($rs);
+		
+		}
+		
+		public function getRestaurantList()
+		{
+			
+			$data 	= 	 file_get_contents("php://input");
+			$data 	=	 json_decode($data, true);
+			
+			$radius = ($this->config->item('default_radius'))?$this->config->item('default_radius'):0;
+
+			$result = $this->client_model->getRestaurant($data['data'],$radius);
+		
+			echo json_encode($result);
+		}
+		
+		public function getRestaurantMenu()
+		{
+			
+		
+			$data 	= 	 file_get_contents("php://input");
+			$data 	=	 json_decode($data, true);
+			$result = $this->client_model->getRestaurantMenu($data);
+			
+			$category = array();
+			
+			if(!empty($result)){
+				foreach ($result as $r)
+				{
+					$category[$r['category_id']]['category_id'] = $r['category_id'];
+					$category[$r['category_id']]['category_name'] = $r['category_name'];
+					$category[$r['category_id']]['restaurant_id'] = $r['restaurant_id'];
+					$category[$r['category_id']]['location_id'] = $r['location_id'];
+					
+					
+					$item_array = array('item_id'=>$r['item_id'],
+										'item_description'=>$r['item_description'],
+										'item_name'=>$r['item_name'],
+										'price'=>$r['price']);
+					$category[$r['category_id']]['items'][] = $item_array;			
+				
+				}
+			}
+		
+			echo json_encode($category);
+		}
+		
+		public function getRestaurantMenuDetail()
+		{
+			
+		
+			$data 	= 	 file_get_contents("php://input");
+			$data 	=	 json_decode($data, true);
+			//$data['id'] = 12;
+			$result_array = $this->client_model->getRestaurantMenuDetail($data['id']);
+			
+			$category = array();
+			
+			if(!empty($result_array)){
+				
+					
+					foreach($result_array as $result)
+					{
+						$menu['category_id'] = $result['category_id'];
+						$menu['item_name'] = $result['item_name'];
+						$menu['item_id'] = $result['item_id'];
+						$menu['item_description'] = $result['item_description'];
+						$menu['location_id'] = $result['location_id'];
+						$menu['price'] = $result['price'];
+						
+						if($result['option_id']!=''){
+						
+							$menu['option_id'][$result['option_id']] = $result['option_id'];
+							$menu['option_name'][$result['option_id']] = $result['option_name'];
+							if($result['side_id']!=''){
+							
+									$menu['side_id'][$result['option_id']][$result['side_id']] = $result['side_id'];
+									$menu['side_item'][$result['option_id']][$result['side_id']] = $result['side_item'];
+									$menu['side_price'][$result['option_id']][$result['side_id']] = $result['side_price'];
+								
+								}
+								else
+								{
+									$menu['side_id'][$result['option_id']] = array();
+									$menu['side_item'][$result['option_id']] = array();
+									$menu['side_price'][$result['option_id']] = array();
+								}
+							
+						}
+						else
+						{
+							$menu['option_id'] = array();
+							$menu['option_name'] = array();
+							$menu['side_id'] = array();
+							$menu['side_item'] = array();
+							$menu['side_price'] = array();
+						}
+					}
+					
+				
+				
+			}
+			//echo '<pre>';print_r($menu);echo'<pre>';
+			echo json_encode($menu);
+		}
+		public function getDefaultLocation()
+		{
+		
+			$map_data = array('lat'=>$this->config->item('default_lat'),'long'=>$this->config->item('default_long'));
+			echo json_encode($map_data);
+		}
+		public function addCartDetail()
+		{
+			
+			$data 	= 	 file_get_contents("php://input");
+			$data 	=	 json_decode($data, true);
+			$check_res = array();
+			$check = 0;
+			if($data['user_id']){
+			
+			if($data['clear']){
+			
+				$this->client_model->removeCartDetail(array('member_id'=>$data['user_id']));
+				
+			}else
+			{
+			 $check_res = $this->client_model->checkCartResId($data['user_id']);
+			}
+			
+			if(empty($check_res) || $check_res['restaurant_id'] == $data['res_id']){
+			
+			$check_array = array('item_size'=>$data['map_id'],'item_id'=>$data['id'],'member_id'=>$data['user_id']);
+			
+			if(!$data['clear']){
+			
+				$check = $this->client_model->checkCartDetail($check_array);
+			}
+			if($check!=0)
+			{
+				$qty = $data['qty']+$check['quantity'];
+				$update_array=array('quantity'=>$qty);
+				$check_array = array('cart_id'=>$check['cart_id']);
+				
+				$result = $this->client_model->updateCartDetail($update_array,$check_array);
+			}else{
+				
+				$insert_array = array('member_id'=>$data['user_id'],'item_id'=>$data['id'],'item_size'=>$data['map_id'],'quantity'=>$data['qty'],'restaurant_id'=>$data['res_id']);
+				$result = $this->client_model->addCartDetail($insert_array);
+			}
+				
+			}
+			else
+			{
+				echo json_encode(array('error'=>'Items in cart are from another resturants.Do you need to clear your cart ?'));
+			}
+			}
+		}
+		
+		public function getCartQuantity()
+		{
+			$data 	= 	 file_get_contents("php://input");
+			$data 	=	 json_decode($data, true);
+			if($data['user_id']){
+			
+				$check_array = array('member_id'=>$data['user_id']);
+			    $cart_qty= $this->client_model->getCartQty($check_array);
+				echo json_encode($cart_qty);
+			}
+		}
+		public function getCartDetails()
+		{
+			$data 	= 	 file_get_contents("php://input");
+			$data 	=	 json_decode($data, true);
+			if($data['user_id']){
+			
+				$check_array = array('member_id'=>$data['user_id']);
+				
+				$this->client_model->deleteInactiveItems($check_array);//remove inactive products
+				
+			    $cart_details= $this->client_model->getCartDetails($check_array);
+				$cart_total = $this->client_model->getCartTotal($check_array);
+				echo json_encode(array('details'=>$cart_details,'total'=>$cart_total));
+			}
+		}
+		public function removeCartItem()
+		{
+			$data 	= 	 file_get_contents("php://input");
+			$data 	=	 json_decode($data, true);
+			if($data['user_id']){
+			
+				$this->client_model->removeCartDetail(array('member_id'=>$data['user_id'],'cart_id'=>$data['cart_id']));
+			}
+		}
+		public function insertOrderDetails()
+		{
+			$data 	= 	 file_get_contents("php://input");
+			$data 	=	 json_decode($data, true);
+			if($data['user_id']){
+			
+				$check_array = array('member_id'=>$data['user_id']);
+				
+				$this->client_model->deleteInactiveItems($check_array);//remove inactive products
+				
+				$cart_details= $this->client_model->getCartDetails($check_array);
+				
+				if(empty($cart_details))
+				{
+					$error = "You have no items in your cart";
+					echo json_encode(array('error'=>$error));
+					exit;
+				}
+				
+				$order_ref_id = $this->client_model->getOrderRefId();
+				$date_time  = date('Y-m-d H:i:s');
+				$cart_total = $this->client_model->getCartTotal($check_array);
+				$total_amount = $cart_total['total'];
+				
+				$insert_array = array('order_ref_id'=>$order_ref_id,
+									  'member_id'=>$data['user_id'],
+									   'created_time'=>$date_time,
+									   'total_amount'=>$total_amount,
+									   'restaurant_id'=>$cart_details[0]['restaurant_id']);
+									   
+				$delete_order_id = $this->client_model->getPendingOrder($data['user_id']);
+				
+				if($delete_order_id!=0)
+				{
+					$this->client_model->deletePendingOrder($delete_order_id);
+				}
+				
+				$order_id  = $this->client_model->insertOrder($insert_array);		
+				
+				if($order_id){			   
+			   
+				foreach($cart_details as $items)
+				{
+					$insert_array = array('order_id'=>$order_id,
+											'item_id'=>$items['item_id'],
+											'item_size'=>$items['item_size'],
+											'unit_price'=>$items['price'],
+											'quantity'=>$items['quantity'],
+											'price' =>$items['item_total'] );
+											
+					$this->client_model->insertOrderItem($insert_array);
+					
+				}
+					
+					$this->client_model->updateCartDetail(array('order_id'=>$order_id),array('member_id'=>$data['user_id']));
+					
+					$order_items = $this->client_model->getOrderItems($order_id);
+					$order_details = array('date_time'=>date('d/m/Y h.i a',strtotime($date_time)),'order_ref_id'=>$order_ref_id);
+					echo json_encode(array('details'=>$order_details,'items'=>$order_items,'total'=>$total_amount));
+				}
+				else
+				{
+					$error = "Unknown error occur.Try again";
+					echo json_encode(array('error'=>$error));
+				}
+			}
+		}
+		
+		public function completeOrder()
+		{
+			$data 	= 	 file_get_contents("php://input");
+			$data 	=	 json_decode($data, true);
+			if($data['user_id']){
+				
+			  $pending_order_id = $this->client_model->getFinalOrder($data['user_id'],$data['order_ref_id']);
+			  if($pending_order_id!=0)
+			  {
+			  	 $this->client_model->setOrderSucess($pending_order_id);
+			  }
+			  else
+			  {
+			  	$error = " Duplicated Order ! ";
+			    echo json_encode(array('error'=>$error));
+			  }
+			
+			}
+		}
+		
+		public function getOrder()
+		{
+
+			$data 	= 	 file_get_contents("php://input");
+			$data 	=	 json_decode($data, true);	
+			if($data['order_ref_id']){
+			
+				 $result = $this->client_model->getOrder($data['order_ref_id']);
+				 if(!empty($result))
+				 {
+				 	echo json_encode(array('details'=>$result));
+				 }
+				 else
+				 {
+				 	$error = "Unknown error occur ! ";
+					echo json_encode(array('error'=>$error));
+				 }
+				 
+			}	
+		}
+		
+}

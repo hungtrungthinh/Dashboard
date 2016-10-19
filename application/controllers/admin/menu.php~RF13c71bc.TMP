@@ -1,0 +1,562 @@
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+//error_reporting(E_ALL);
+class Menu extends My_Controller {
+
+
+	public function __construct()
+	{                        
+		parent::__construct();
+		$this->_setAsAdmin();
+		$this->load->helper(array('url','cookie'));	
+		$this->load->model('admin/menu_model');		
+	}
+
+	public function index()
+	{
+		redirect($this->user->root.'/menu/category');
+	}
+	public function category($category_id){
+		$user = $this->session->userdata('user');
+		$restaurant_id=$user->restaurant_id;
+		$location_id=$user->location_id;
+		if($_SERVER['REQUEST_METHOD']=='POST'){
+			$category_id		=	$this->input->post('cate_id');
+			$array=array(	
+							'category_name'=>$this->input->post('category_name'),
+							'restaurant_id'=>$restaurant_id,
+							'location_id'=>$location_id,
+							'status'=>'Y',
+						);
+			$result	=	$this->menu_model->checkCategoryExist($location_id,$array['category_name'],$category_id);
+			//print_r($result);exit;
+			if(count($result)!=0){
+				$this->session->set_flashdata('error_message', 'Category already exist');
+				redirect($this->user->root.'/menu/category/'.$category_id);
+			}else{
+				$resultsitem['id']	=$this->menu_model->insertCategory($array,$category_id);
+				if($category_id!='')
+					$this->session->set_flashdata('success_message', 'Category updated successfully');
+				else
+					$this->session->set_flashdata('success_message', 'Category added successfully');
+				redirect($this->user->root.'/menu/category/'.$category_id);
+			}
+
+		}else{
+		
+		if($category_id!='')
+			$data['categorydetails']	=$this->menu_model->getCategoryDetails($category_id);
+		$data['categorylist']	=	$this->menu_model->gelAllCategories($restaurant_id,$location_id);
+		//echo '<pre>';print_r($data['categorylist']);exit;		
+		$ouput['output']			= $this->load->view('admin/menu/menu-tab',$data,true);
+		$this->_render_output($ouput);
+		}
+	}
+	public function dish($cat_id)
+	{   
+	    $user = $this->session->userdata('user');
+		$restaurant_id=$user->restaurant_id;
+		$location_id=$user->location_id;		
+		$data['category']	=	$this->menu_model->gelAllCategories($restaurant_id,$location_id);
+		if($_SERVER['REQUEST_METHOD']=='POST'){
+			
+			$data['dishlist']	=	$this->menu_model->gelSelectedDishItems($cat_id);
+		}else{
+			$data['dishlist']	=	$this->menu_model->gelSelectedDishItems();
+		}
+			
+		$ouput['output']			= $this->load->view('admin/menu/dish-tab',$data,true);
+		$this->_render_output($ouput);
+	}
+	
+	public function add_dish($item_id){
+		$user = $this->session->userdata('user');
+		$restaurant_id=$user->restaurant_id;
+		$location_id=$user->location_id;		
+		
+		if($_SERVER['REQUEST_METHOD']=='POST'){
+			//echo '<pre>';print_r($_POST);
+			$item_id		=	$this->input->post('item_id');
+			$array=array(	
+							'category_id'=>$this->input->post('category'),
+							'item_name'=>$this->input->post('menu_item'),
+							'item_description'=>$this->input->post('description'),
+						);
+			$result	=	$this->menu_model->checkItemExist($array['category_id'],$array['item_name'],$item_id);
+
+			if(count($result)!=0){
+				$this->session->set_flashdata('error_message', 'Item already exist');
+				redirect($this->user->root.'/menu/add_dish/'.$item_id);
+			}else{
+				$resultsitem['id']	=$this->menu_model->insertDishItems($array,$item_id);
+				//echo $resultsitem['id'];exit;
+				//-------------for options and dishes start
+				
+				//for price and sizes
+				
+				$mulsize=$this->input->post('mulsize');
+				if($this->input->post('price_dish')==''){
+					
+				}else{
+					$newarr=array("item_id"=>$resultsitem['id'],
+								  "size"=>"Regular",
+								  "price"=>$this->input->post('price_dish')
+								  );
+								  
+					
+					$resu	=$this->menu_model->insertDishItemSize($newarr);			  
+				}
+				//$delid	=$this->menu_model->deleteOptionAndSides($resultsitem['id']);
+				
+				
+				$option_item		=	$this->input->post('option_item');
+				$rev_option_item = array_reverse($option_item);
+				$j=1;
+				for($i=0;$i<count($rev_option_item);$i++)
+				{
+					$ar=array('option_item'=>$rev_option_item[$i],
+						  'sides'=>$this->input->post('sides_'.$j),
+						  'price'=>$this->input->post('price_'.$j)
+						  );
+						  
+						if($ar['option_item']!=''){
+							
+							$dishoption=array("location_id"=>$location_id,
+											   "restaurant_id"=>$restaurant_id,
+											   "dish_item_id"=>$resultsitem['id'],
+											   "option_name"=>$ar['option_item'],
+											   );
+							//insert into dish_options
+							$optid	=$this->menu_model->insertDishOptions($dishoption);
+							//echo '<pre>';$ar['option_item'];
+							if(count($ar['sides'])!=0 and count($ar['price'])!=0){
+								for($k=0;$k<count($ar['sides']);$k++){
+									if($ar['sides'][$k]!=''){
+										//insert into option_sides
+										
+										$sidesarray=array("option_id"=>$optid,
+											   "side_item"=>$ar['sides'][$k],
+											   "price"=>$ar['price'][$k],
+											   );
+										$dishid	=$this->menu_model->insertOptionsSides($sidesarray);
+										
+										//echo '<pre>';echo $ar['sides'][$k];
+										//echo '<pre>';echo $ar['price'][$k];
+									}
+								}
+							}
+						}	  
+						  
+						  
+					$j++;
+				}				
+				//-------------for options and dishes-----close
+				
+				if($item_id!='')
+					$this->session->set_flashdata('success_message', 'Dish item updated successfully');
+				else
+					$this->session->set_flashdata('success_message', 'Dish item added successfully');
+				redirect($this->user->root.'/menu/add_dish/'.$item_id);
+				//echo $this->load->view('admin/menu/add_dish');
+				exit;
+			}
+		
+		}else{
+			if($item_id!=''){
+				$data['itemdetails']	=$this->menu_model->getItemDetails($item_id);
+				$data['options_details']	=$this->menu_model->getDishOptions($item_id);
+				if(count($data['options_details']!='')){
+					foreach($data['options_details'] as $var){
+							$sidesdetails[$var['option_id']]	=$this->menu_model->getOptionSides($var['option_id']);
+						
+					}
+				}
+				$data['sidesdetails']=$sidesdetails;
+				
+			//echo '<pre>';print_r($data);
+			//echo '<pre>';print_r($data);
+			//echo $item_id;
+			//exit;
+			}
+			$data['categorylist']	=	$this->menu_model->gelAllCategories($restaurant_id,$location_id);
+			$ouput['output']			= $this->load->view('admin/menu/add-dish',$data,true);
+			$this->_render_output($ouput);
+		}
+		
+		
+	}
+	
+	public function editOption(){
+		
+		echo '<pre>';print_r($_POST);exit;
+		
+		$option_item		=	$this->input->post('option_item');
+		$option_id		=	$this->input->post('option_id');
+		$sides		=	$this->input->post('sides');
+		$price		=	$this->input->post('price');
+		$sidesID		=	$this->input->post('sidesID');
+		if($option_item!='' and $option_id	!=''){
+			$this->menu_model->updateDishOptions($option_id,$option_item);
+			for($i=0;$i<count($sides);$i++)
+				{
+					if(trim($sides[$i])!='' and trim($price[$i])!=''){
+					$array=array(
+								'side_item'=>$sides[$i],
+								'price'=>$price[$i],
+								'option_id'=>$option_id,
+					);
+					if($sidesID[$i]!=''){
+				 		$dishid	=$this->menu_model->UpdateOptionsSides($array,$sidesID[$i]);
+					}else{
+				 		$dishid	=$this->menu_model->insertOptionsSides($array);
+					}
+					}
+				
+				}	
+			$this->session->set_flashdata('success_message', 'Option updated successfully');	
+			redirect($this->user->root.'/menu/dish');
+		}else{
+			redirect($this->user->root.'/menu/dish');
+		}
+		
+		
+	}
+	public function checkItemExist(){
+		$category_id	=	$this->input->post('category');
+		$item_name		=	$this->input->post('menu_item');
+		$item_id		=	$this->input->post('item_id');
+		$result	=	$this->menu_model->checkItemExist($category_id,$item_name,$item_id);
+			if(count($result)!=0){
+				echo "0";//exist
+			}else{
+				echo "1";//not exist
+			}
+		exit;
+	}
+	public function deleteDishItem($item_id){
+	
+		$item_id		=	$this->input->post('item_id');
+		if($item_id!='')
+			$res	=	$this->menu_model->delRestaurantItems($item_id);
+		$this->session->set_flashdata('success_message', 'Dish item deleted successfully');
+		//redirect('admin/menu/dish/');
+		exit;
+	}
+	public function deleteDish($item_id){
+		$item_id		=	$this->input->post('item_id');
+		if($item_id!='')
+			$res	=	$this->menu_model->delRestaurantItems($item_id);
+		$this->session->set_flashdata('success_message', 'Dish item deleted successfully');
+		redirect('admin/menu/dish/');
+	}
+	
+	
+	public function itemStatus(){
+	
+		$item_id=$_POST['item_id'];
+		if($_POST['status']=='Y')
+			$status='N';
+		else
+			$status='Y';
+		if($item_id!='')
+			$res	=	$this->menu_model->dishItemStatus($item_id,$status);
+	
+	}
+	
+	
+	public function checkCategoryExist(){
+		$user = $this->session->userdata('user');
+		$restaurant_id=$user->restaurant_id;
+		$location_id=$user->location_id;		
+		
+		$category_name	=	$this->input->post('category');
+		$category_id		=	$this->input->post('category_id');
+		$result	=	$this->menu_model->checkCategoryExist($location_id,$category_name,$category_id);
+			if(count($result)!=0){
+				echo "0";//exist
+			}else{
+				echo "1";//not exist
+			}
+		exit;
+	}	
+	public function getCategoryDetail(){
+		$cat_id=$_POST['cat_id'];
+		$res	=	$this->menu_model->getCategoryDetails($cat_id);
+		$data['category_id']=$res['category_id'];
+		$data['category_name']=stripslashes($res['category_name']);
+		echo json_encode($data);
+		exit;
+	}
+	public function categoryStatus(){
+	
+		$category_id=$_POST['category_id'];
+		if($_POST['status']=='Y')
+			$status='N';
+		else
+			$status='Y';
+		if($category_id!='')
+			$res	=	$this->menu_model->categoryStatus($category_id,$status);
+	
+	}
+	
+	public function deleteSides()
+	{
+		$sidesid=isset($_POST['sidesid'])?$_POST['sidesid']:'';
+		$res	=	$this->menu_model->delDishItemSides($sidesid);
+	}
+	public function saveOptionAjax(){
+		$option_id=$_POST['option_id'];
+		$option_name =$_POST['name'];
+		$this->menu_model->setTable('fk_dish_options');
+		$res	=	$this->menu_model->update_by(array('option_id'=>$option_id), array('option_name'=>$option_name));
+		return true;
+	}
+	public function OptionStatus(){
+	
+		$option_id=$_POST['option_id'];
+		if($_POST['status']=='Y')
+			$status='N';
+		else
+			$status='Y';
+		if($option_id!=''){
+			$this->menu_model->setTable('fk_dish_options');
+			$res	=	$this->menu_model->update_by(array('option_id'=>$option_id), array('status'=>$status));
+		}
+	}
+	
+	public function saveSidesAjax(){
+		$side_id=$_POST['sides_id'];
+		$side_item =$_POST['sides'];
+		$this->menu_model->setTable('fk_option_sides');
+		$res	=	$this->menu_model->update_by(array('side_id'=>$side_id), array('side_item'=>$side_item));
+		return true;
+	}	
+	public function saveSidesPriceAjax(){
+		$side_id=$_POST['sides_id'];
+		$price =$_POST['price'];
+		$this->menu_model->setTable('fk_option_sides');
+		$res	=	$this->menu_model->update_by(array('side_id'=>$side_id), array('price'=>$price));
+		return true;
+	}	
+	
+	
+	public function deleteCategory($category_id){
+		$category_id		=	$this->input->post('category_id');
+		if($category_id!='')
+			$res	=	$this->menu_model->delCategory($category_id);
+		$this->session->set_flashdata('success_message', 'Category deleted successfully');
+		//redirect('admin/menu/dish/');
+	}
+	public function addOptionDiv(){
+		$data['count']=$_POST['count']+1;
+		echo $this->load->view('admin/menu/optionDiv',$data);
+	}
+	public function addSidesDiv(){
+		$data['optid']=$_POST['optid'];
+		$data['count']=$_POST['count']+1;
+		echo $this->load->view('admin/menu/sidesDiv',$data);
+	}	
+	public function addSidesPopDiv(){
+		$data['optid']=$_POST['optid'];
+		$data['count']=$_POST['count']+1;
+		echo $this->load->view('admin/menu/sidesPopup',$data);
+	}	
+	
+	public function optionPopup(){
+		$data['option_id']=$_POST['option_id'];
+		//$data['count']=$_POST['count']+1;
+		$data['options_details']	=$this->menu_model->getOptionDetail($data['option_id']);
+		$data['sidesdetails']	=$this->menu_model->getOptionSides($data['option_id']);
+		//echo '<pre>';print_r($data['sidesdetails']);	
+		//exit;		
+		echo $this->load->view('admin/menu/optionPopup',$data);
+	}	
+	
+	public function deleteall(){
+		$data['option_id']=$_POST['option_id'];
+		//$data['count']=$_POST['count']+1;
+		$data['deletealloptions']	=$this->menu_model->delDishOption($data['option_id']);
+		$data['deleteallsides']	=$this->menu_model->delDishSide($data['option_id']);
+		//echo '<pre>';print_r($data['sidesdetails']);	
+		exit;		
+		
+	}	
+	
+	public function add_dish_1($item_id){
+		$user = $this->session->userdata('user');
+		$restaurant_id=$user->restaurant_id;
+		$location_id=$user->location_id;		
+		
+		if($_SERVER['REQUEST_METHOD']=='POST'){
+			
+			$item_id		=	$this->input->post('item_id');
+			$array=array(	
+							'category_id'=>$this->input->post('category'),
+							'item_name'=>$this->input->post('menu_item'),
+							'price'=>$this->input->post('price_dish'),
+							'item_description'=>$this->input->post('description'),
+						);
+			$result	=	$this->menu_model->checkItemExist($array['category_id'],$array['item_name'],$item_id);
+
+			if(count($result)!=0){
+				$this->session->set_flashdata('error_message', 'Item already exist');
+				redirect($this->user->root.'/menu/add_dish/'.$item_id);
+			}else{
+				$resultsitem['id']	=$this->menu_model->insertDishItems($array,$item_id);
+				//echo $resultsitem['id'];exit;
+				//-------------for options and dishes start
+				
+				
+				//$delid	=$this->menu_model->deleteOptionAndSides($resultsitem['id']);
+				
+				
+				$option_item		=	$this->input->post('option_item');
+				$rev_option_item = array_reverse($option_item);
+				$j=1;
+				for($i=0;$i<count($rev_option_item);$i++)
+				{
+					$ar=array('option_item'=>$rev_option_item[$i],
+						  'sides'=>$this->input->post('sides_'.$j),
+						  'price'=>$this->input->post('price_'.$j)
+						  );
+						  
+						if($ar['option_item']!=''){
+							
+							$dishoption=array("location_id"=>$location_id,
+											   "restaurant_id"=>$restaurant_id,
+											   "dish_item_id"=>$resultsitem['id'],
+											   "option_name"=>$ar['option_item'],
+											   );
+							//insert into dish_options
+							$optid	=$this->menu_model->insertDishOptions($dishoption);
+							//echo '<pre>';$ar['option_item'];
+							if(count($ar['sides'])!=0 and count($ar['price'])!=0){
+								for($k=0;$k<count($ar['sides']);$k++){
+									if($ar['sides'][$k]!='' and $ar['price'][$k]!=''){
+										//insert into option_sides
+										
+										$sidesarray=array("option_id"=>$optid,
+											   "side_item"=>$ar['sides'][$k],
+											   "price"=>$ar['price'][$k],
+											   );
+										$dishid	=$this->menu_model->insertOptionsSides($sidesarray);
+										
+										//echo '<pre>';echo $ar['sides'][$k];
+										//echo '<pre>';echo $ar['price'][$k];
+									}
+								}
+							}
+						}	  
+						  
+						  
+					$j++;
+				}				
+				//-------------for options and dishes-----close
+				
+				if($item_id!='')
+					$this->session->set_flashdata('success_message', 'Dish item updated successfully');
+				else
+					$this->session->set_flashdata('success_message', 'Dish item added successfully');
+				redirect($this->user->root.'/menu/dish/'.$item_id);
+			}
+		
+		}else{
+			if($item_id!=''){
+				$data['itemdetails']	=$this->menu_model->getItemDetails($item_id);
+				$data['options_details']	=$this->menu_model->getDishOptions($item_id);
+				if(count($data['options_details']!='')){
+					foreach($data['options_details'] as $var){
+							$sidesdetails[$var['option_id']]	=$this->menu_model->getOptionSides($var['option_id']);
+						
+					}
+				}
+				$data['sidesdetails']=$sidesdetails;
+				
+			//echo '<pre>';print_r($data['itemdetails']);
+			//echo '<pre>';print_r($data['sidesdetails']);
+			//echo $item_id;
+			//exit;
+			}
+			$data['categorylist']	=	$this->menu_model->gelAllCategories($restaurant_id,$location_id);
+			$ouput['output']			= $this->load->view('admin/menu/add-dish_1',$data,true);
+			$this->_render_output($ouput);
+		}
+		
+		
+	}
+	
+	public function updateItem(){
+		$optitle	=	$_POST['option_item'];
+		$options	=	$_POST['options'];
+		$prices	=	$_POST['price'];
+		$option_id	=	$_POST['option_id'];
+		$sidesid	=	$_POST['sidesid'];
+		$mandatory	=	$_POST['mandatory'];
+		
+		
+		$data['categorylist']	=	$this->menu_model->updateDishOptions($option_id,$optitle,$mandatory);
+		
+		if(count($options)!=0){
+			for($i=0;$i<count($options);$i++){
+				if($options[$i]!=''){
+				$arr=array(
+						  'side_item'=>$options[$i],
+						  'price'=>$prices[$i],
+						  'option_id'=>$option_id
+						  );
+				//echo '<pre>';print_r($arr);
+				$data['categorylist']	=	$this->menu_model->UpdateOptionsSides($arr,$sidesid[$i]);
+				}
+			}
+		}
+		
+		//print_r($option);exit;
+		
+		
+		
+	}
+	public function sortorder(){
+		$sidesort	=	$_POST['sideslist'];
+		//echo '<pre>';print_r($_POST['sideslist']);
+		$i=1;
+		foreach($sidesort as $val){
+			$this->menu_model->setTable('fk_option_sides');
+			$this->menu_model->update_by(array('side_id'=>$val),array('sortorder'=>$i));
+			$i++;
+		}
+		
+	}
+	public function optionsortorder(){
+		$optionlist	=	$_POST['optionlist'];
+		//echo '<pre>';print_r($_POST['optionlist']);
+		$i=1;
+		foreach($optionlist as $val){
+			$this->menu_model->setTable('fk_dish_options');
+			$this->menu_model->update_by(array('option_id'=>$val),array('sortorder'=>$i));
+			$i++;
+		}
+		
+	}
+	public function deleteSize()
+	{
+		$sizeid=isset($_POST['sizeid'])?$_POST['sizeid']:'';
+		$res	=	$this->menu_model->delDishItemSize($sizeid);
+	}
+	
+	public function getCat($cat_id)
+	{
+		$cat_id	=	$_POST['cat_id'];
+	    $user = $this->session->userdata('user');
+		$restaurant_id=$user->restaurant_id;
+		$location_id=$user->location_id;		
+		//$data['category']	=	$this->menu_model->gelAllCategories($restaurant_id,$location_id);
+		
+		$data['dishlist']	=	$this->menu_model->gelSelectedDishItems($cat_id);
+		//print_r($data['dishlist']);exit;
+		$ouput['output']			= $this->load->view('admin/menu/dish-tab',$data,true);
+		$this->_render_output($ouput);	
+	}
+	
+}
+
+/* End of file welcome.php */
+/* Location: ./application/controllers/welcome.php */

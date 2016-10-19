@@ -1,0 +1,30 @@
+OrderWeb.factory('facebook', [function() {
+    return FB;
+}]);
+OrderWeb.factory('Scopes', function ($rootScope) {
+    var mem = {};
+ 
+    return {
+        store: function (key, value) {
+            mem[key] = value;
+        },
+        get: function (key) {
+            return mem[key];
+        }
+    };
+});
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '186341771705015',
+      xfbml      : true,
+      version    : 'v2.5'
+    });
+  };
+
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "//connect.facebook.net/en_US/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));

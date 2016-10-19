@@ -1,0 +1,426 @@
+<!-- ---------header area login/ogout ---------------- -->
+
+<div class="layout-main col yelp__col--main" style="width: 1025px;" >
+   
+
+    <div id="" class="ember-view loc-picker container--with-fixed-header">
+    <div class="drawer-header container__fixed-header clearfix accordion-offset" style="width: 1025px;">
+    
+    
+  	<span class="pull-left heading--comp heading--xsm header-brand">
+        <div id="" class="ember-view cn-powered-logo">
+        <a href="http://newagesme.com/forkourse/" target="_blank">
+        <img height="19" class="cn-logo" alt="Powered by Forkourse" src="">
+        </a>
+    </div>
+    </span>
+    <span class="pull-right session-header drawer-header__action" ng-hide="member_id">
+    <a class="heading pull-right session-header drawer-header__action" data-ember-action="1277" ng-click="login()">
+    	<span class="ss-gizmo ss-user"></span> Log In
+    </a>
+    </span>
+    <span class="pull-right session-header drawer-header__action" ng-show="member_id">
+    	<span class="session-header__greet">Hi, {{name}}</span>
+    	<a href="javascript:" ng-click="logout()"> Log Out</a>
+    </span>
+</div>
+
+
+<!-- ---------Choose Location Area ---------------- -->
+
+
+<ul id="" class="ember-view accordion">
+    <li id="" class="ember-view accordion__pane is-active">
+    
+        <div class="accordion__pane-header" ng-click="removeRes()">
+          <span ng-if="title" class="heading heading--med heading--accordion" ng-model="title">
+          {{title}}
+          </span>
+          <span ng-if="!title" class="heading heading--med heading--accordion" ng-model="title">
+          Choose Location
+          </span>
+          <span class="accordion__pane-header-step ss-gizmo ss-write"></span>
+        </div>
+        
+        <div class="accordion__pane-body js-locations-list-container" style="">
+          <ul class="accordion__pane-menu" ng-hide="title" >
+            <li  ng-repeat="list in restaurantList" ng-click="selectRes(list.restaurant_name,list.location_id,list.city)">
+              <a href="javascript:" data-ember-action="1280" class="accordion__pane-choice ">
+                <span class="heading heading--link">{{list.restaurant_name}} - {{list.city}}</span> <!---->
+                <input type="hidden" ng-model="list.restaurant_name"  />
+                  <address>
+                      {{list.address}}, {{list.city}} {{list.state}} {{list.zip_code}}
+                  </address>
+              </a>
+            </li>
+          </ul>
+        </div>
+    </li>
+
+
+
+
+<!-- ---------Choose method Pickup/Delivery area ---------------- -->
+
+
+	<li class="ember-view accordion__pane is-active" >
+    <div class="accordion__pane-header" data-ember-action="3567" ng-click="removeOrderType()">
+      <span ng-if="orderType" class="heading heading--med heading--accordion" ng-model="orderType">
+      {{orderType}}
+      </span>
+      <span ng-if="!orderType" class="heading heading--med heading--accordion" ng-model="orderType">
+      Choose a Method
+      </span>
+    
+     
+     </span>
+    </div>
+    
+    
+    <div id="div_orderTime" class="accordion__pane-body"  ng-show="title" style="display:none;">
+    
+      <ul class="accordion__pane-menu" ng-hide="orderType" >
+        <li ng-click="selectOrderType('Pickup')">
+          <a href="javascript:" data-ember-action="4195" class="accordion__pane-choice ">
+            <span class="heading heading--link">Pickup</span>
+            <p>Pickup your order at the <strong>{{city}}</strong> location.</p>
+          </a>
+        </li>
+        <li ng-click="selectOrderType('Delivery')">
+          <a href="javascript:" data-ember-action="4198" class="accordion__pane-choice ">
+              <span class="heading heading--link">Delivery</span>
+              <p>
+                Your order will be delivered to you
+                  as soon as possible.
+              </p>
+          </a>
+        </li>
+      </ul>
+    
+    <div class="ember-view ember-view__accordion-overlay" ng-show="orderTypeDelivery">
+    <div  class="ember-view ember-view__delivery-address-checker">
+    <form ng-submit="saveDeliveryAddress()">
+      
+    
+      <div id="" class="ember-view">  
+      <div class="row pad-top">
+        <h4>Delivery Address </h4>
+    
+          <div class="">
+            <div id="" class="ember-view">  
+            <div class="form-group">
+        <input type="text" id="" class="form-control" ng-model="delivery.address" placeholder="Street Address" name="street address 1" required>
+        
+      </div>
+        <div class="form-group">
+          <input type="text" id="" class=" form-control" ng-model="delivery.instruction" placeholder="Delivery Instructions" name="street address 2">
+        </div>
+      <div class="form-group ">
+        <div class="col col--6">
+          <input type="text" id="" class=" form-control" placeholder="City" ng-model="delivery.city" name="city" required>
+         
+        </div>
+        <div class="col col--3 col--4--sm">
+          <div id="ember3840" class="ember-view">
+          <div class="">
+      <select id="ember3847" class=" form-control"  ng-model="delivery.state"  name="state" required>
+      <option value="">State</option>
+      <option class="ember-view" value="AL">AL</option>
+      <option  value="AK">AK</option>
+      <option  value="AS">AS</option>
+      <option  value="AZ">AZ</option>
+      <option  value="AR">AR</option>
+      <option  value="CA">CA</option>
+      <option  value="CO">CO</option>
+      <option  value="CT">CT</option>
+      <option  value="DC">DC</option>
+      <option  value="DE">DE</option>
+      <option  value="FL">FL</option>
+      <option  value="GA">GA</option>
+      <option  value="GU">GU</option>
+      <option  value="HI">HI</option>
+      <option  value="ID">ID</option>
+      <option  value="IL">IL</option>
+      <option  value="IN">IN</option>
+      <option  value="IA">IA</option>
+      <option  value="KS">KS</option>
+      <option  value="KY">KY</option>
+      <option  value="LA">LA</option>
+      <option  value="ME">ME</option>
+      <option  value="MD">MD</option>
+      <option  value="MA">MA</option>
+      <option  value="MI">MI</option>
+      <option  value="MN">MN</option>
+      <option  value="MO">MO</option>
+      <option  value="MP">MP</option>
+      <option  value="MS">MS</option>
+      <option  value="MT">MT</option>
+      <option  value="NE">NE</option>
+      <option  value="NV">NV</option>
+      <option  value="NH">NH</option>
+      <option  value="NJ">NJ</option>
+      <option  value="NM">NM</option>
+      <option  value="NY">NY</option>
+      <option  value="NC">NC</option>
+      <option  value="ND">ND</option>
+      <option  value="OH">OH</option>
+      <option  value="OK">OK</option>
+      <option  value="OR">OR</option>
+      <option  value="PA">PA</option>
+      <option  value="RI">RI</option>
+      <option  value="SC">SC</option>
+      <option  value="SD">SD</option>
+      <option  value="TN">TN</option>
+      <option  value="TX">TX</option>
+      <option  value="UM">UM</option>
+      <option  value="UT">UT</option>
+      <option  value="VT">VT</option>
+      <option  value="VA">VA</option>
+      <option  value="VI">VI</option>
+      <option  value="WA">WA</option>
+      <option  value="WV">WV</option>
+      <option  value="WI">WI</option>
+      <option  value="WY">WY</option>
+    </select>
+    </div>
+    </div>
+          
+        </div>
+        <div class="col col--3 col--4--sm">
+          <input type="text" id="ember3842" class="ember-view ember-text-field form-control" ng-model="delivery.zip"  placeholder="Zip" name="zip" required>
+          
+        </div>
+      </div>
+      
+      
+      <div id="ember3837" class="ember-view alert alert--error" ng-show="errormsg">{{errormsg}}</div>
+      
+      
+    </div>
+          </div>
+      </div>
+    </div>
+    
+    <div id="spinner" class="ember-view spinner-overlay is-transparent is-hidden">
+    <div class="spinner spinner spinner--absolute"></div>
+    </div>
+    
+
+        <hr>
+    
+        <div class="actions">
+          <div class="col col--6">
+            <a class="btn btn-default btn--sm btn-block" ng-click="removeOrderType()">Cancel</a>
+          </div>
+          <div class="col col--6">
+            <button class="btn btn-primary btn--sm btn-block" data-ember-action="3701">Next</button>
+          </div>
+        </div>
+    
+    </div>
+    </div>
+    </div>
+</li>
+
+
+
+
+
+<!-- ---------choose Order Now/Later area ---------------- -->
+
+
+<li id="" class="ember-view accordion__pane is-active">
+    <div class="accordion__pane-header" data-ember-action="3559"  ng-click="removeOrderTime()">
+      <span ng-if="orderTimeTitle" class="heading heading--med heading--accordion" ng-model="orderTimeTitle">
+      {{orderTimeTitle}}
+      </span>
+      <span ng-if="!orderTimeTitle" class="heading heading--med heading--accordion" ng-model="orderTimeTitle">
+      Choose a Time
+      </span>
+    </div>
+
+
+
+
+    <div class="accordion__pane-body" id="chooseTime_div"  ng-show="orderTime" style="display:none;">
+    
+      <ul class="accordion__pane-menu" ng-hide="orderTimeTitle" id="div_orderTimeTitle" >
+        <li ng-click="selectOrderTime('Now')" ng-hide="resClosed">
+          <a href="javascript:" data-ember-action="3560" class="accordion__pane-choice ">
+              <span class="heading heading--link">Order for Now</span>
+              <p>Have your ordered prepared as soon as possible.</p>
+          </a>
+        </li>
+        
+        <li ng-click="viewOpeningTimes()" ng-show="resClosed">
+          <a href="javascript:" data-ember-action="3560" class="accordion__pane-choice ">
+              <span class="heading heading--link">Order for Now(Unavailable)</span>
+              <p>Order for Now is not available at this time. Click here to see hours.</p>
+          </a>
+        </li>
+        
+        <li ng-click="selectOrderTime('Later')">
+            <a class="accordion__pane-choice" href="javascript:" data-ember-action="4168">
+                <span class="heading heading--link">Order for Later</span>
+                <p>Have your order prepared at a specified future date &amp; time.</p>
+            </a>
+        </li>
+      </ul>
+      
+    <div class="ember-view  order-ahead" ng-show="orderTimeLater" id="div_orderTimeLater" style="display:none;">
+        <div class="order-ahead__days">
+            <div class="order-ahead__header">
+               <span>Choose a Date &amp; Time</span>
+                  <a href="javascript:" ng-click="removeOrderTime()" class="order-ahead__close" data-ember-action="3563">
+                  Back</a>
+            </div>
+            <ul class=" day-picker">
+                <li class="" ng-repeat="(key, value) in laterDates[0]" ng-click="selectLaterDate(key,value)">
+                    <a class="  ">
+                        <span class="day-picker__day-word">
+                            {{key}}
+                        </span>
+                        <span class="day-picker__day-number">{{value}}</span>
+                    </a>
+                </li>
+            </ul>     
+        </div>
+    
+    
+    <div class="order-ahead__times">
+    	<div id="" class="ember-view time-picker" ng-show="laterDate">           
+             <ul style="overflow:scroll; max-height: 500px;">
+                 <li ng-show="resClosed">Unavailable</li>
+                    <li class="" ng-repeat="timeAr in timeArray.time"  id="{{$index}}">
+                        <span  ng-hide="timeAr.showfull" ng-click="showConfirm(timeAr)" >{{timeAr.start}} </span>
+                        <ul class="time-picker__methods">
+                          <li> <span class="ss-icon ss-check text--success"></span><strong>pickup </strong></li>
+                         
+                        </ul>
+                        <a ng-show="timeAr.showfull"  href="javascript:"  ng-click="selectLaterOrderTime(timeAr)" class="btn btn-success btn-block">
+                            Confirm {{timeAr.start}} 
+                        </a>
+                        
+                 </li>
+             </ul>
+         </div>     
+    </div>
+        
+    
+    
+    </div></div>
+</li>
+
+
+
+
+<!-- --------- Confirm Area ---------------- -->
+
+
+
+
+<li id="orderTypeContifm" class="ember-view accordion__pane is-active" ng-show="orderTypeContifm" style="display:none;">
+<div class="accordion__pane-body accordion__pane-body--confirm" style="height: 629px;">
+  <div class="wrap-pad">
+    <a class="btn btn-primary btn-block" ng-click="confirmMenu()" >Confirm and View Menu</a>
+  </div>
+</div>
+</li>
+</form>
+
+</ul>
+</div>
+</div>
+
+
+
+
+
+<div class="modal fade" tabindex="-1" role="dialog"  id="resClosedModal" style="z-index:111111; overflow-y:hidden; height:75%">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h3 class="modal-title">Restaurant Closed</h3>
+      </div>
+      <div class="modal-body">
+      
+        
+        <h4 class="text--capitalize">Restaurant Timings</h4>
+        <hr>
+        
+        <table style=" width:100%">
+        <tbody>
+            <tr>
+              <td>Sunday</td>
+              <td>
+                <ul>
+                    <li ng-show="timings[0]['start_at']">{{timings[0]['start_at'] | date : 'h:mm a' }} - {{timings[0]['end_at'] | date : 'h:mm a' }}</li>
+                    <li ng-hide="timings[0]['start_at']">Closed</li>
+                </ul>
+              </td>
+            </tr>
+            <tr>
+              <td>Monday</td>
+              <td>
+                <ul>
+                    <li ng-show="timings[1]['start_at']">{{timings[1]['start_at'] | date : 'h:mm a' }} - {{timings[1]['end_at'] | date : 'h:mm a' }}</li>
+                    <li ng-hide="timings[1]['start_at']">Closed</li>
+                </ul>
+              </td>
+            </tr>
+            <tr>
+              <td>Tuesday</td>
+              <td>
+                <ul>
+                    <li ng-show="timings[2]['start_at']">{{timings[2]['start_at'] | date : 'h:mm a' }} - {{timings[2]['end_at'] | date : 'h:mm a' }}</li>
+                    <li ng-hide="timings[2]['start_at']">Closed</li>
+                </ul>
+              </td>
+            </tr>
+            <tr>
+              <td>Wednesday</td>
+              <td>
+                <ul>
+                    <li ng-show="timings[3]['start_at']">{{timings[3]['start_at'] | date : 'h:mm a' }} - {{timings[3]['end_at'] | date : 'h:mm a' }}</li>
+                    <li ng-hide="timings[3]['start_at']">Closed</li>
+                </ul>
+              </td>
+            </tr>
+            <tr>
+              <td>Thursday</td>
+              <td>
+                <ul>
+                    <li ng-show="timings[4]['start_at']">{{timings[4]['start_at'] | date : 'h:mm a' }} - {{timings[4]['end_at'] | date : 'h:mm a' }}</li>
+                    <li ng-hide="timings[4]['start_at']">Closed</li>
+                </ul>
+              </td>
+            </tr>
+            <tr>
+              <td>Friday</td>
+              <td>
+                <ul>
+                    <li ng-show="timings[5]['start_at']">{{timings[5]['start_at'] | date : 'h:mm a' }} - {{timings[5]['end_at'] | date : 'h:mm a' }}</li>
+                    <li ng-hide="timings[5]['start_at']">Closed</li>
+                </ul>
+              </td>
+            </tr>
+            <tr>
+              <td>Saturday</td>
+              <td>
+                <ul>
+                    <li ng-show="timings[6]['start_at']">{{timings[6]['start_at'] | date : 'h:mm a' }} - {{timings[6]['end_at'] | date : 'h:mm a' }}</li>
+                    <li ng-hide="timings[6]['start_at']">Closed</li>
+                </ul>
+              </td>
+            </tr>
+        </tbody>
+      </table>
+      </div>
+      
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+ 
+ 

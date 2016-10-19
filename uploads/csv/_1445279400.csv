@@ -1,0 +1,6 @@
+order_ref_id,restaurant_name,first_name,last_name,order_type,total_amount,created_time
+#FR24549350,"Red Lobster",Eddie,Mueller,Pickup,13.00,"2015-09-25 14:54:00"
+#FR24111586,"Red Lobster",Eddie,Mueller,Pickup,9.45,"2015-09-25 14:54:51"
+#FR9196653,"Red Lobster",Nithin,Skariah,Pickup,35.00,"2015-09-25 16:20:19"
+#FR2461502,"Red Lobster",Eddie,Mueller,Pickup,18.00,"2015-09-25 20:20:09"
+#FR2981268,"Red Lobster",Jibin,Joy,Pickup,3.00,"2015-09-30 01:15:41"

@@ -1,0 +1,26 @@
+order_ref_id , restaurant_name, first_name, order_type, total_amount, created_time
+#FR9895987,Red Lobster,NithinSkariah,Pickup,207.00,23-09-2015
+#FR941222,Red Lobster,NithinSkariah,Pickup,0.00,23-09-2015
+#FR9480668,Red Lobster,NithinSkariah,Pickup,13.60,23-09-2015
+#FR31646861,Red Lobster,AntonTestName,Pickup,16.05,23-09-2015
+#FR31845166,Red Lobster,AntonTestName,Pickup,16.95,23-09-2015
+#FR17198312,Red Lobster,PraveenKumar,Pickup,10.70,23-09-2015
+#FR1788214,Red Lobster,PraveenKumar,Pickup,21.40,23-09-2015
+#FR9683408,Red Lobster,NithinSkariah,Pickup,25.00,24-09-2015
+#FR31820399,Red Lobster,AntonTestName,Pickup,3.00,24-09-2015
+#FR31117217,Red Lobster,AntonTestName,Pickup,10.50,24-09-2015
+#FR9245559,Red Lobster,NithinSkariah,Pickup,0.00,24-09-2015
+#FR927019,Red Lobster,NithinSkariah,Pickup,0.00,24-09-2015
+#FR910876,Red Lobster,NithinSkariah,Pickup,3.00,24-09-2015
+#FR958889,Red Lobster,NithinSkariah,Pickup,2.50,24-09-2015
+#FR9528540,Red Lobster,NithinSkariah,Pickup,3.00,24-09-2015
+#FR9872603,Red Lobster,NithinSkariah,Pickup,7.50,24-09-2015
+#FR16425405,Red Lobster,ArdraMohan,Pickup,0.00,25-09-2015
+#FR19963583,Red Lobster,KiranShaji,Pickup,10.70,25-09-2015
+#FR19682341,Red Lobster,KiranShaji,Pickup,10.70,25-09-2015
+#FR24681576,Red Lobster,EddieMueller,Pickup,14.00,25-09-2015
+#FR24549350,Red Lobster,EddieMueller,Pickup,13.00,25-09-2015
+#FR24111586,Red Lobster,EddieMueller,Pickup,9.45,25-09-2015
+#FR9196653,Red Lobster,NithinSkariah,Pickup,35.00,25-09-2015
+#FR2461502,Red Lobster,EddieMueller,Pickup,18.00,25-09-2015
+#FR2981268,Red Lobster,JibinJoy,Pickup,3.00,30-09-2015
